@@ -1,0 +1,118 @@
+# HideArea - .gitignore
+
+# ========================================
+# 環境変数・シークレット
+# ========================================
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# ========================================
+# Java / Spring Boot
+# ========================================
+backend/target/
+backend/build/
+backend/.gradle/
+backend/out/
+backend/bin/
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+*.war
+*.ear
+*.log
+hs_err_pid*
+
+# IntelliJ IDEA
+backend/.idea/
+backend/*.iml
+backend/*.iws
+backend/*.ipr
+
+# Eclipse
+backend/.classpath
+backend/.project
+backend/.settings/
+
+# VS Code
+backend/.vscode/
+
+# Spring Boot
+backend/spring.log
+
+# ========================================
+# Node.js / React
+# ========================================
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.cache/
+frontend/.parcel-cache/
+frontend/.vite/
+frontend/.next/
+
+# Logs
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+frontend/lerna-debug.log*
+
+# Editor directories and files
+frontend/.vscode/*
+!frontend/.vscode/extensions.json
+frontend/.idea
+frontend/.DS_Store
+frontend/*.suo
+frontend/*.ntvs*
+frontend/*.njsproj
+frontend/*.sln
+frontend/*.sw?
+
+# ========================================
+# Docker
+# ========================================
+docker/volumes/
+*.dockerignore
+
+# ========================================
+# データベース
+# ========================================
+*.db
+*.sqlite
+*.sqlite3
+
+# ========================================
+# OS
+# ========================================
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ========================================
+# ログ・プロセスID
+# ========================================
+logs/
+*.log
+.pids/
+*.pid
+
+# ========================================
+# テスト・カバレッジ
+# ========================================
+backend/coverage/
+frontend/coverage/
+*.lcov
+.nyc_output/
+
+# ========================================
+# その他
+# ========================================
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+*~
