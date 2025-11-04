@@ -65,7 +65,7 @@ hidearea/
 │   ├── src/
 │   │   ├── main/
 │   │   │   ├── java/
-│   │   │   │   └── com/hidearea/core/
+│   │   │   │   └── net/hidearea/core/
 │   │   │   │       ├── HideAreaApplication.java
 │   │   │   │       ├── api/
 │   │   │   │       │   └── v1/
@@ -85,7 +85,7 @@ hidearea/
 │   │   │       ├── application-prod.yml
 │   │   │       └── db/migration/        # Flyway migrations
 │   │   └── test/
-│   │       └── java/com/hidearea/core/
+│   │       └── java/net/hidearea/core/
 │   ├── build.gradle.kts
 │   ├── settings.gradle.kts
 │   ├── Dockerfile
@@ -246,7 +246,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.5"
 }
 
-group = "com.hidearea"
+group = "net.hidearea"
 version = "0.0.1-SNAPSHOT"
 
 java {

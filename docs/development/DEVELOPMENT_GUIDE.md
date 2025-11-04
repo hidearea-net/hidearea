@@ -742,7 +742,7 @@ const handleSubmit = async (data: FormData) => {
 ```yaml
 logging:
   level:
-    com.hidearea: DEBUG
+    net.hidearea: DEBUG
     org.springframework.web: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE

@@ -17,12 +17,12 @@
 
 ### 1.1 ベースパッケージ
 
-**ベースパッケージ**: `com.hidearea.core`
+**ベースパッケージ**: `net.hidearea.core`
 
 ### 1.2 全体構造
 
 ```
-com.hidearea.core/
+net.hidearea.core/
 ├── HideAreaApplication.java                # Spring Boot エントリーポイント
 │
 ├── api/                                    # API レイヤー（バージョン管理）
@@ -146,7 +146,7 @@ com.hidearea.core.api/
 **v1 のコントローラー**:
 
 ```java
-package com.hidearea.core.api.v1.controller;
+package net.hidearea.core.api.v1.controller;
 
 import com.hidearea.core.api.v1.dto.request.LoginRequest;
 import com.hidearea.core.api.v1.dto.response.AuthResponse;
@@ -180,7 +180,7 @@ public class AuthController {
 **v2 のコントローラー（将来）**:
 
 ```java
-package com.hidearea.core.api.v2.controller;
+package net.hidearea.core.api.v2.controller;
 
 import com.hidearea.core.api.v2.dto.request.LoginRequest;
 import com.hidearea.core.api.v2.dto.response.AuthResponse;
@@ -210,7 +210,7 @@ public class AuthController {
 **v1 DTO**:
 
 ```java
-package com.hidearea.core.api.v1.dto.request;
+package net.hidearea.core.api.v1.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -226,7 +226,7 @@ public class LoginRequest {
 ```
 
 ```java
-package com.hidearea.core.api.v1.dto.response;
+package net.hidearea.core.api.v1.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -247,7 +247,7 @@ public class AuthResponse {
 **v2 DTO（将来、フィールド追加例）**:
 
 ```java
-package com.hidearea.core.api.v2.dto.response;
+package net.hidearea.core.api.v2.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -272,7 +272,7 @@ public class AuthResponse {
 **Service層はバージョン非依存**:
 
 ```java
-package com.hidearea.core.service;
+package net.hidearea.core.service;
 
 import com.hidearea.core.api.v1.dto.request.LoginRequest;
 import com.hidearea.core.api.v1.dto.response.AuthResponse;
@@ -289,7 +289,7 @@ public interface AuthService {
 **実装クラス**:
 
 ```java
-package com.hidearea.core.service.impl;
+package net.hidearea.core.service.impl;
 
 import com.hidearea.core.domain.entity.User;
 import com.hidearea.core.repository.UserRepository;
@@ -336,7 +336,7 @@ public class AuthServiceImpl implements AuthService {
 DTO間の変換や、エンティティとDTOの変換にMapperパターンを使用：
 
 ```java
-package com.hidearea.core.api.v1.mapper;
+package net.hidearea.core.api.v1.mapper;
 
 import com.hidearea.core.domain.entity.User;
 import com.hidearea.core.api.v1.dto.response.UserResponse;
@@ -357,7 +357,7 @@ public class UserMapper {
 ```
 
 ```java
-package com.hidearea.core.api.v2.mapper;
+package net.hidearea.core.api.v2.mapper;
 
 import com.hidearea.core.domain.entity.User;
 import com.hidearea.core.api.v2.dto.response.UserResponse;
@@ -403,7 +403,7 @@ public class AuthController {
 **バージョン別のAPI仕様書生成**:
 
 ```java
-package com.hidearea.core.config;
+package net.hidearea.core.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;

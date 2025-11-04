@@ -34,7 +34,7 @@
 #### Java エンティティ実装
 
 ```java
-package com.hidearea.core.domain.entity;
+package net.hidearea.core.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -89,7 +89,7 @@ public class User {
 #### UserRole Enum
 
 ```java
-package com.hidearea.core.domain.entity;
+package net.hidearea.core.domain.entity;
 
 public enum UserRole {
     USER,
@@ -124,7 +124,7 @@ public enum UserRole {
 #### Java エンティティ実装
 
 ```java
-package com.hidearea.core.domain.entity;
+package net.hidearea.core.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -196,7 +196,7 @@ public class Profile {
 #### ProfileType Enum
 
 ```java
-package com.hidearea.core.domain.entity;
+package net.hidearea.core.domain.entity;
 
 public enum ProfileType {
     PERSONAL,   // 個人用プロフィール
@@ -226,7 +226,7 @@ public enum ProfileType {
 #### Java エンティティ実装
 
 ```java
-package com.hidearea.core.domain.entity;
+package net.hidearea.core.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -273,7 +273,7 @@ public class UserProfile {
 #### RoleInProfile Enum
 
 ```java
-package com.hidearea.core.domain.entity;
+package net.hidearea.core.domain.entity;
 
 public enum RoleInProfile {
     OWNER,   // プロフィール所有者（作成者、完全な権限）
@@ -310,7 +310,7 @@ public enum RoleInProfile {
 #### Java エンティティ実装
 
 ```java
-package com.hidearea.core.domain.entity;
+package net.hidearea.core.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -512,7 +512,7 @@ WHERE ppr.id IS NULL;
 ### 3.1 UserRepository
 
 ```java
-package com.hidearea.core.repository;
+package net.hidearea.core.repository;
 
 import com.hidearea.core.domain.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -534,7 +534,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 ### 3.2 ProfileRepository
 
 ```java
-package com.hidearea.core.repository;
+package net.hidearea.core.repository;
 
 import com.hidearea.core.domain.entity.Profile;
 import com.hidearea.core.domain.entity.ProfileType;
@@ -612,7 +612,7 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
 ### 3.3 UserProfileRepository
 
 ```java
-package com.hidearea.core.repository;
+package net.hidearea.core.repository;
 
 import com.hidearea.core.domain.entity.UserProfile;
 import com.hidearea.core.domain.entity.RoleInProfile;
@@ -673,7 +673,7 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Long> 
 ### 3.4 ProfileProfileRelationRepository
 
 ```java
-package com.hidearea.core.repository;
+package net.hidearea.core.repository;
 
 import com.hidearea.core.domain.entity.ProfileProfileRelation;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -63,7 +63,7 @@
 
 - [ ] **Spring Bootプロジェクト初期化**
   - [ ] Spring Initializr でプロジェクト作成
-    - Group: `com.hidearea`
+    - Group: `net.hidearea`
     - Artifact: `hidearea-backend`
     - Java: 25
     - Dependencies: Spring Web, Spring Data JPA, PostgreSQL Driver, Spring Security, Lombok
@@ -71,14 +71,14 @@
   - [ ] `./gradlew build` で正常にビルドできることを確認
 
 - [ ] **パッケージ構造作成**
-  - [ ] `com.hidearea.core.domain.entity/` パッケージ作成
-  - [ ] `com.hidearea.core.repository/` パッケージ作成
-  - [ ] `com.hidearea.core.service/` パッケージ作成
-  - [ ] `com.hidearea.core.security/` パッケージ作成
-  - [ ] `com.hidearea.core.api.v1.controller/` パッケージ作成
-  - [ ] `com.hidearea.core.api.v1.dto/` パッケージ作成
-  - [ ] `com.hidearea.core.config/` パッケージ作成
-  - [ ] `com.hidearea.core.exception/` パッケージ作成
+  - [ ] `net.hidearea.core.domain.entity/` パッケージ作成
+  - [ ] `net.hidearea.core.repository/` パッケージ作成
+  - [ ] `net.hidearea.core.service/` パッケージ作成
+  - [ ] `net.hidearea.core.security/` パッケージ作成
+  - [ ] `net.hidearea.core.api.v1.controller/` パッケージ作成
+  - [ ] `net.hidearea.core.api.v1.dto/` パッケージ作成
+  - [ ] `net.hidearea.core.config/` パッケージ作成
+  - [ ] `net.hidearea.core.exception/` パッケージ作成
 
 - [ ] **application.yml設定**
   - [ ] データベース接続設定
@@ -158,15 +158,15 @@
 #### 3.1 Enum定義
 
 - [ ] **UserRole Enum**
-  - [ ] `com.hidearea.core.domain.entity.UserRole` 作成
+  - [ ] `net.hidearea.core.domain.entity.UserRole` 作成
   - [ ] `USER`, `ADMIN` 定義
 
 - [ ] **ProfileType Enum**
-  - [ ] `com.hidearea.core.domain.entity.ProfileType` 作成
+  - [ ] `net.hidearea.core.domain.entity.ProfileType` 作成
   - [ ] `PERSONAL`, `BUSINESS` 定義
 
 - [ ] **RoleInProfile Enum**
-  - [ ] `com.hidearea.core.domain.entity.RoleInProfile` 作成
+  - [ ] `net.hidearea.core.domain.entity.RoleInProfile` 作成
   - [ ] `OWNER`, `MEMBER` 定義
 
 **参考**: [DATA_DESIGN.md](../architecture/DATA_DESIGN.md) - 1. エンティティ設計
@@ -174,7 +174,7 @@
 #### 3.2 エンティティ実装
 
 - [ ] **User エンティティ**
-  - [ ] `com.hidearea.core.domain.entity.User` 作成
+  - [ ] `net.hidearea.core.domain.entity.User` 作成
   - [ ] フィールド定義: `id`, `username`, `email`, `passwordHash`, `role`, `enabled`, `createdAt`, `updatedAt`
   - [ ] `@Entity`, `@Table`, `@Id`, `@GeneratedValue` アノテーション設定
   - [ ] `@OneToMany` リレーション設定（UserProfile）
@@ -182,20 +182,20 @@
   - [ ] 監査機能: `@EntityListeners(AuditingEntityListener.class)`
 
 - [ ] **Profile エンティティ**
-  - [ ] `com.hidearea.core.domain.entity.Profile` 作成
+  - [ ] `net.hidearea.core.domain.entity.Profile` 作成
   - [ ] フィールド定義: `id`, `email`, `profileName`, `displayName`, `bio`, `avatarUrl`, `profileType`, `isPublic`, `createdAt`, `updatedAt`
   - [ ] `@OneToMany` リレーション設定（UserProfile, ProfileProfileRelation）
   - [ ] Lombok設定
 
 - [ ] **UserProfile エンティティ**
-  - [ ] `com.hidearea.core.domain.entity.UserProfile` 作成
+  - [ ] `net.hidearea.core.domain.entity.UserProfile` 作成
   - [ ] フィールド定義: `id`, `user`, `profile`, `roleInProfile`, `joinedAt`
   - [ ] `@ManyToOne` リレーション設定（User, Profile）
   - [ ] 複合ユニーク制約: `@UniqueConstraint(columnNames = {"user_id", "profile_id"})`
   - [ ] Lombok設定（`@Data`ではなく`@Getter`, `@Setter`推奨）
 
 - [ ] **ProfileProfileRelation エンティティ**
-  - [ ] `com.hidearea.core.domain.entity.ProfileProfileRelation` 作成
+  - [ ] `net.hidearea.core.domain.entity.ProfileProfileRelation` 作成
   - [ ] フィールド定義: `id`, `parentProfile`, `childProfile`, `createdAt`
   - [ ] `@ManyToOne` リレーション設定（Profile）
   - [ ] 複合ユニーク制約: `@UniqueConstraint(columnNames = {"parent_profile_id", "child_profile_id"})`
@@ -218,7 +218,7 @@
 #### 4.1 Repositoryインターフェース作成
 
 - [ ] **UserRepository**
-  - [ ] `com.hidearea.core.repository.UserRepository` 作成
+  - [ ] `net.hidearea.core.repository.UserRepository` 作成
   - [ ] `JpaRepository<User, Long>` を継承
   - [ ] メソッド定義:
     - [ ] `Optional<User> findByUsername(String username)`
@@ -228,7 +228,7 @@
     - [ ] `Optional<User> findByUsernameAndEnabledTrue(String username)`
 
 - [ ] **ProfileRepository**
-  - [ ] `com.hidearea.core.repository.ProfileRepository` 作成
+  - [ ] `net.hidearea.core.repository.ProfileRepository` 作成
   - [ ] `JpaRepository<Profile, Long>` を継承
   - [ ] メソッド定義:
     - [ ] `List<Profile> findByProfileType(ProfileType profileType)`
@@ -241,7 +241,7 @@
       - [ ] `findRootProfileId(Long profileId)` - ルートID取得（再帰クエリ）
 
 - [ ] **UserProfileRepository**
-  - [ ] `com.hidearea.core.repository.UserProfileRepository` 作成
+  - [ ] `net.hidearea.core.repository.UserProfileRepository` 作成
   - [ ] `JpaRepository<UserProfile, Long>` を継承
   - [ ] メソッド定義:
     - [ ] `List<UserProfile> findByUserId(Long userId)` - JOIN FETCH使用
@@ -253,7 +253,7 @@
     - [ ] `List<UserProfile> findRootProfilesByUserId(Long userId)` - カスタムクエリ
 
 - [ ] **ProfileProfileRelationRepository**
-  - [ ] `com.hidearea.core.repository.ProfileProfileRelationRepository` 作成
+  - [ ] `net.hidearea.core.repository.ProfileProfileRelationRepository` 作成
   - [ ] `JpaRepository<ProfileProfileRelation, Long>` を継承
   - [ ] メソッド定義:
     - [ ] `List<ProfileProfileRelation> findByParentProfileId(Long parentProfileId)`
@@ -286,10 +286,10 @@
 #### 5.1 例外クラス作成
 
 - [ ] **カスタム例外定義**
-  - [ ] `com.hidearea.core.exception.BusinessException` - ビジネスロジック例外
-  - [ ] `com.hidearea.core.exception.ResourceNotFoundException` - リソース未検出
-  - [ ] `com.hidearea.core.exception.UnauthorizedException` - 認証失敗
-  - [ ] `com.hidearea.core.exception.ErrorCode` - エラーコードEnum
+  - [ ] `net.hidearea.core.exception.BusinessException` - ビジネスロジック例外
+  - [ ] `net.hidearea.core.exception.ResourceNotFoundException` - リソース未検出
+  - [ ] `net.hidearea.core.exception.UnauthorizedException` - 認証失敗
+  - [ ] `net.hidearea.core.exception.ErrorCode` - エラーコードEnum
 
 - [ ] **グローバル例外ハンドラー**
   - [ ] `@RestControllerAdvice` でグローバルハンドラー作成
@@ -298,14 +298,14 @@
 #### 5.2 AuthService実装
 
 - [ ] **AuthService インターフェース**
-  - [ ] `com.hidearea.core.service.AuthService` 作成
+  - [ ] `net.hidearea.core.service.AuthService` 作成
   - [ ] メソッド定義:
     - [ ] `AuthResponse login(LoginRequest request)` - ログイン
     - [ ] `AuthResponse register(RegisterRequest request)` - ユーザー登録
     - [ ] `void logout(String token)` - ログアウト（将来対応）
 
 - [ ] **AuthServiceImpl 実装クラス**
-  - [ ] `com.hidearea.core.service.impl.AuthServiceImpl` 作成
+  - [ ] `net.hidearea.core.service.impl.AuthServiceImpl` 作成
   - [ ] `@Service`, `@Transactional` アノテーション設定
   - [ ] ログイン処理:
     - [ ] ユーザー名/メールで検索
@@ -322,7 +322,7 @@
 #### 5.3 UserService実装
 
 - [ ] **UserService インターフェース**
-  - [ ] `com.hidearea.core.service.UserService` 作成
+  - [ ] `net.hidearea.core.service.UserService` 作成
   - [ ] メソッド定義:
     - [ ] `UserDto getUserById(Long id)` - ユーザー取得
     - [ ] `UserDto getUserByUsername(String username)` - ユーザー取得
@@ -331,7 +331,7 @@
     - [ ] `void changePassword(Long id, ChangePasswordRequest request)` - パスワード変更
 
 - [ ] **UserServiceImpl 実装クラス**
-  - [ ] `com.hidearea.core.service.impl.UserServiceImpl` 作成
+  - [ ] `net.hidearea.core.service.impl.UserServiceImpl` 作成
   - [ ] `@Service`, `@Transactional` アノテーション設定
   - [ ] 各メソッド実装
   - [ ] 権限チェック（自分自身またはADMINのみ）
@@ -339,7 +339,7 @@
 #### 5.4 ProfileService実装
 
 - [ ] **ProfileService インターフェース**
-  - [ ] `com.hidearea.core.service.ProfileService` 作成
+  - [ ] `net.hidearea.core.service.ProfileService` 作成
   - [ ] メソッド定義:
     - [ ] `ProfileDto createProfile(CreateProfileRequest request, String username)` - 作成
     - [ ] `ProfileDto createChildProfile(Long parentId, CreateProfileRequest request, String username)` - 子プロフィール作成
@@ -352,7 +352,7 @@
     - [ ] `void removeMember(Long profileId, Long userId, String username)` - メンバー削除
 
 - [ ] **ProfileServiceImpl 実装クラス**
-  - [ ] `com.hidearea.core.service.impl.ProfileServiceImpl` 作成
+  - [ ] `net.hidearea.core.service.impl.ProfileServiceImpl` 作成
   - [ ] `@Service`, `@Transactional` アノテーション設定
   - [ ] プロフィール作成処理:
     - [ ] Profile エンティティ作成
@@ -405,7 +405,7 @@
     ```
 
 - [ ] **JwtTokenProvider 実装**
-  - [ ] `com.hidearea.core.security.JwtTokenProvider` 作成
+  - [ ] `net.hidearea.core.security.JwtTokenProvider` 作成
   - [ ] メソッド実装:
     - [ ] `generateToken(User user)` - JWT生成
     - [ ] `getUsernameFromToken(String token)` - ユーザー名取得
@@ -421,7 +421,7 @@
 #### 6.2 Spring Security設定
 
 - [ ] **SecurityConfig 実装**
-  - [ ] `com.hidearea.core.config.SecurityConfig` 作成
+  - [ ] `net.hidearea.core.config.SecurityConfig` 作成
   - [ ] `@Configuration`, `@EnableWebSecurity` アノテーション
   - [ ] SecurityFilterChain Bean定義:
     - [ ] CSRF無効化（JWT使用のため）
@@ -432,7 +432,7 @@
   - [ ] PasswordEncoder Bean定義（BCrypt、強度10）
 
 - [ ] **JwtAuthenticationFilter 実装**
-  - [ ] `com.hidearea.core.security.JwtAuthenticationFilter` 作成
+  - [ ] `net.hidearea.core.security.JwtAuthenticationFilter` 作成
   - [ ] `OncePerRequestFilter` を継承
   - [ ] フィルター処理:
     - [ ] `Authorization` ヘッダーからJWT取得
@@ -441,7 +441,7 @@
   - [ ] SecurityFilterChainに登録（UsernamePasswordAuthenticationFilter の前）
 
 - [ ] **UserDetailsServiceImpl 実装**
-  - [ ] `com.hidearea.core.security.UserDetailsServiceImpl` 作成
+  - [ ] `net.hidearea.core.security.UserDetailsServiceImpl` 作成
   - [ ] `UserDetailsService` を実装
   - [ ] `loadUserByUsername(String username)` 実装:
     - [ ] UserRepository でユーザー検索
@@ -469,7 +469,7 @@
 #### 7.1 AuthController実装
 
 - [ ] **AuthController 作成**
-  - [ ] `com.hidearea.core.api.v1.controller.AuthController` 作成
+  - [ ] `net.hidearea.core.api.v1.controller.AuthController` 作成
   - [ ] `@RestController`, `@RequestMapping("/api/v1/auth")` アノテーション
   - [ ] エンドポイント実装:
     - [ ] `POST /api/v1/auth/login` - ログイン
@@ -483,7 +483,7 @@
 #### 7.2 UserController実装
 
 - [ ] **UserController 作成**
-  - [ ] `com.hidearea.core.api.v1.controller.UserController` 作成
+  - [ ] `net.hidearea.core.api.v1.controller.UserController` 作成
   - [ ] `@RestController`, `@RequestMapping("/api/v1/users")` アノテーション
   - [ ] エンドポイント実装:
     - [ ] `GET /api/v1/users/me` - 現在のユーザー情報取得
@@ -499,7 +499,7 @@
 #### 7.3 ProfileController実装
 
 - [ ] **ProfileController 作成**
-  - [ ] `com.hidearea.core.api.v1.controller.ProfileController` 作成
+  - [ ] `net.hidearea.core.api.v1.controller.ProfileController` 作成
   - [ ] `@RestController`, `@RequestMapping("/api/v1/profiles")` アノテーション
   - [ ] エンドポイント実装:
     - [ ] `POST /api/v1/profiles` - プロフィール作成
@@ -534,7 +534,7 @@
   - [ ] `build.gradle.kts` に`springdoc-openapi-starter-webmvc-ui` 追加
 
 - [ ] **OpenApiConfig 実装**
-  - [ ] `com.hidearea.core.config.OpenApiConfig` 作成
+  - [ ] `net.hidearea.core.config.OpenApiConfig` 作成
   - [ ] API情報設定（タイトル、バージョン、説明）
   - [ ] APIバージョン別グループ設定（v1, v2）
   - [ ] JWT認証スキーム設定

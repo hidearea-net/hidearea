@@ -86,7 +86,7 @@ flowchart TB
 ### 2.2 コアシステム（MVPフェーズ）
 
 ```java
-com.hidearea.core/
+net.hidearea.core/
 ├── domain/           // ドメインモデル
 │   └── entity/
 │       ├── User.java
@@ -286,7 +286,7 @@ flowchart TD
 #### 5.1.1 コアコンポーネント
 
 ```
-com.hidearea.core/
+net.hidearea.core/
 ├── domain/              // ドメイン層
 │   ├── entity/          // JPA エンティティ
 │   │   ├── User.java

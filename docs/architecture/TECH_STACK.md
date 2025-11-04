@@ -69,7 +69,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.4"
 }
 
-group = "com.hidearea"
+group = "net.hidearea"
 version = "1.0.0"
 java.sourceCompatibility = JavaVersion.VERSION_25
 

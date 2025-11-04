@@ -156,7 +156,7 @@ hidearea/
 ├── backend/                    # Spring Bootアプリケーション
 │   ├── src/
 │   │   ├── main/
-│   │   │   ├── java/com/hidearea/core/
+│   │   │   ├── java/net/hidearea/core/
 │   │   │   └── resources/
 │   │   └── test/
 │   ├── build.gradle.kts
@@ -200,10 +200,10 @@ hidearea/
 
 ### 5.1 バックエンド パッケージ構造
 
-**ベースパッケージ**: `com.hidearea.core`
+**ベースパッケージ**: `net.hidearea.core`
 
 ```
-com.hidearea.core/
+net.hidearea.core/
 ├── HideAreaApplication.java    # エントリーポイント
 ├── api/                        # API レイヤー（バージョン管理）
 │   └── v1/                     # API v1
