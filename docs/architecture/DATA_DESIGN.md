@@ -25,7 +25,6 @@
 |---------|---|------|-----|
 | id | BIGINT | PK, Auto Increment | ユーザーID |
 | username | VARCHAR(50) | UNIQUE, NOT NULL | ユーザー名（ログインID） |
-| email | VARCHAR(100) | UNIQUE, NOT NULL | メールアドレス |
 | password_hash | VARCHAR(255) | NOT NULL | パスワードハッシュ（BCrypt） |
 | role | VARCHAR(20) | NOT NULL | 権限（USER, ADMIN） |
 | enabled | BOOLEAN | NOT NULL, DEFAULT TRUE | アカウント有効フラグ |
@@ -50,8 +49,7 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 @EntityListeners(AuditingEntityListener.class)
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -63,9 +61,6 @@ public class User {
 
     @Column(nullable = false, unique = true, length = 50)
     private String username;
-
-    @Column(nullable = false, unique = true, length = 100)
-    private String email;
 
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
@@ -111,6 +106,7 @@ public enum UserRole {
 | カラム名 | 型 | 制約 | 説明 |
 |---------|---|------|-----|
 | id | BIGINT | PK, Auto Increment | プロフィールID |
+| email | VARCHAR(100) | UNIQUE, NOT NULL | メールアドレス |
 | profile_name | VARCHAR(100) | NOT NULL | プロフィール名 |
 | display_name | VARCHAR(100) | - | 表示名 |
 | bio | TEXT | - | 自己紹介 |
@@ -143,8 +139,7 @@ import java.util.List;
 @Entity
 @Table(name = "profiles")
 @EntityListeners(AuditingEntityListener.class)
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -153,6 +148,9 @@ public class Profile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false, unique = true, length = 100)
+    private String email;
 
     @Column(name = "profile_name", nullable = false, length = 100)
     private String profileName;
@@ -287,6 +285,8 @@ public enum RoleInProfile {
 
 ### 1.4 ProfileProfileRelation（プロフィール階層関連）中間テーブル
 
+アーキテクチャ概要は [ARCHITECTURE.md](./ARCHITECTURE.md) の「データモデル」セクションを参照してください。
+
 #### テーブル定義
 
 | カラム名 | 型 | 制約 | 説明 |
@@ -415,7 +415,6 @@ public class ProfileProfileRelation {
 CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     role VARCHAR(20) NOT NULL DEFAULT 'USER',
     enabled BOOLEAN NOT NULL DEFAULT TRUE,
@@ -426,6 +425,7 @@ CREATE TABLE users (
 -- Profiles テーブル（シンプル構造: 自己参照なし）
 CREATE TABLE profiles (
     id BIGSERIAL PRIMARY KEY,
+    email VARCHAR(100) UNIQUE NOT NULL,
     profile_name VARCHAR(100) NOT NULL,
     display_name VARCHAR(100),
     bio TEXT,
@@ -806,10 +806,9 @@ CREATE TABLE users (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- Profiles テーブル（自己参照: 階層構造）
+-- Profiles テーブル（案C: シンプル構造、階層は別テーブルで管理）
 CREATE TABLE profiles (
     id BIGSERIAL PRIMARY KEY,
-    parent_profile_id BIGINT,
     profile_name VARCHAR(100) NOT NULL,
     display_name VARCHAR(100),
     bio TEXT,
@@ -817,13 +816,10 @@ CREATE TABLE profiles (
     profile_type VARCHAR(20) NOT NULL DEFAULT 'PERSONAL',
     is_public BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT fk_profiles_parent FOREIGN KEY (parent_profile_id)
-        REFERENCES profiles(id) ON DELETE CASCADE
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- UserProfiles 中間テーブル
+-- UserProfiles 中間テーブル（ユーザー・プロフィール関連）
 CREATE TABLE user_profiles (
     id BIGSERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL,
@@ -838,19 +834,38 @@ CREATE TABLE user_profiles (
     CONSTRAINT uk_user_profile UNIQUE (user_id, profile_id)
 );
 
+-- ProfileProfileRelations 中間テーブル（案C: プロフィール階層関連）
+CREATE TABLE profile_profile_relations (
+    id BIGSERIAL PRIMARY KEY,
+    parent_profile_id BIGINT NOT NULL,
+    child_profile_id BIGINT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_ppr_parent FOREIGN KEY (parent_profile_id)
+        REFERENCES profiles(id) ON DELETE CASCADE,
+    CONSTRAINT fk_ppr_child FOREIGN KEY (child_profile_id)
+        REFERENCES profiles(id) ON DELETE CASCADE,
+    CONSTRAINT uk_parent_child UNIQUE (parent_profile_id, child_profile_id),
+    CONSTRAINT chk_not_self CHECK (parent_profile_id != child_profile_id)
+);
+
 -- Indexes
 CREATE INDEX idx_users_username ON users(username);
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_enabled ON users(enabled) WHERE enabled = TRUE;
 
-CREATE INDEX idx_profiles_parent_profile_id ON profiles(parent_profile_id);
 CREATE INDEX idx_profiles_profile_type ON profiles(profile_type);
 CREATE INDEX idx_profiles_is_public ON profiles(is_public) WHERE is_public = TRUE;
-CREATE INDEX idx_profiles_root ON profiles(parent_profile_id) WHERE parent_profile_id IS NULL;
+CREATE INDEX idx_profiles_profile_name ON profiles(profile_name);
+CREATE INDEX idx_profiles_created_at ON profiles(created_at);
 
 CREATE INDEX idx_user_profiles_user_id ON user_profiles(user_id);
 CREATE INDEX idx_user_profiles_profile_id ON user_profiles(profile_id);
 CREATE INDEX idx_user_profiles_role ON user_profiles(role_in_profile);
+
+CREATE INDEX idx_ppr_parent_profile_id ON profile_profile_relations(parent_profile_id);
+CREATE INDEX idx_ppr_child_profile_id ON profile_profile_relations(child_profile_id);
+CREATE INDEX idx_ppr_created_at ON profile_profile_relations(created_at);
 ```
 
 #### V2__add_sample_data.sql（開発環境用サンプルデータ）
@@ -862,22 +877,24 @@ INSERT INTO users (username, email, password_hash, role, enabled) VALUES
 ('john_doe', 'john@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'USER', TRUE),
 ('jane_smith', 'jane@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'USER', TRUE);
 
--- サンプルプロフィール（階層構造）
--- ルートプロフィール
-INSERT INTO profiles (id, parent_profile_id, profile_name, display_name, bio, profile_type, is_public) VALUES
-(1, NULL, 'john-personal', 'John Doe', 'Software Engineer', 'PERSONAL', TRUE),
-(2, NULL, 'acme-corp', 'ACME Corporation', 'Building the future', 'BUSINESS', TRUE),
-(3, NULL, 'jane-photographer', 'Jane Smith - Photographer', 'Professional photographer', 'PERSONAL', TRUE);
+-- サンプルプロフィール（案C: 全てルートプロフィールとして作成）
+INSERT INTO profiles (id, profile_name, display_name, bio, profile_type, is_public) VALUES
+(1, 'john-personal', 'John Doe', 'Software Engineer', 'PERSONAL', TRUE),
+(2, 'acme-corp', 'ACME Corporation', 'Building the future', 'BUSINESS', TRUE),
+(3, 'jane-photographer', 'Jane Smith - Photographer', 'Professional photographer', 'PERSONAL', TRUE),
+(4, 'acme-mascot-alpha', 'ACME Mascot Alpha', 'Official mascot character', 'PERSONAL', TRUE),
+(5, 'acme-mascot-beta', 'ACME Mascot Beta', 'Second mascot character', 'PERSONAL', TRUE),
+(6, 'acme-official', 'ACME Official Account', 'Official announcements', 'BUSINESS', TRUE),
+(7, 'alpha-mini', 'Alpha Mini', 'Mini version of Alpha', 'PERSONAL', TRUE);
 
--- 子プロフィール（親: acme-corp）
-INSERT INTO profiles (id, parent_profile_id, profile_name, display_name, bio, profile_type, is_public) VALUES
-(4, 2, 'acme-mascot-alpha', 'ACME Mascot Alpha', 'Official mascot character', 'PERSONAL', TRUE),
-(5, 2, 'acme-mascot-beta', 'ACME Mascot Beta', 'Second mascot character', 'PERSONAL', TRUE),
-(6, 2, 'acme-official', 'ACME Official Account', 'Official announcements', 'BUSINESS', TRUE);
-
--- 孫プロフィール（親: acme-mascot-alpha）
-INSERT INTO profiles (id, parent_profile_id, profile_name, display_name, bio, profile_type, is_public) VALUES
-(7, 4, 'alpha-mini', 'Alpha Mini', 'Mini version of Alpha', 'PERSONAL', TRUE);
+-- プロフィール階層の作成（案C: profile_profile_relationsテーブル使用）
+INSERT INTO profile_profile_relations (parent_profile_id, child_profile_id) VALUES
+-- acme-corp の子プロフィール
+(2, 4),  -- acme-corp → acme-mascot-alpha
+(2, 5),  -- acme-corp → acme-mascot-beta
+(2, 6),  -- acme-corp → acme-official
+-- acme-mascot-alpha の子プロフィール（孫）
+(4, 7);  -- acme-mascot-alpha → alpha-mini
 
 -- ユーザーとプロフィールの関連付け
 INSERT INTO user_profiles (user_id, profile_id, role_in_profile) VALUES
@@ -912,26 +929,33 @@ ACME Corporation（企業プロフィール）
   └─ ACME Official Account（公式アカウント）
 ```
 
-**SQLクエリ例**:
+**SQLクエリ例（案C）**:
 
 ```sql
 -- ACME Corporation の全子プロフィールを取得
-SELECT * FROM profiles WHERE parent_profile_id = 2;
+SELECT p.*
+FROM profiles p
+INNER JOIN profile_profile_relations ppr ON p.id = ppr.child_profile_id
+WHERE ppr.parent_profile_id = 2;
 
 -- ACME Mascot Alpha の全子プロフィール（孫）を取得
-SELECT * FROM profiles WHERE parent_profile_id = 4;
+SELECT p.*
+FROM profiles p
+INNER JOIN profile_profile_relations ppr ON p.id = ppr.child_profile_id
+WHERE ppr.parent_profile_id = 4;
 
 -- 階層全体を取得（再帰クエリ）
 WITH RECURSIVE profile_tree AS (
-    SELECT id, parent_profile_id, profile_name, 0 as level
-    FROM profiles
-    WHERE id = 2  -- ACME Corporation
+    SELECT p.id, p.profile_name, 0 as level, CAST(NULL AS BIGINT) as parent_profile_id
+    FROM profiles p
+    WHERE p.id = 2  -- ACME Corporation (ルート)
 
     UNION ALL
 
-    SELECT p.id, p.parent_profile_id, p.profile_name, pt.level + 1
+    SELECT p.id, p.profile_name, pt.level + 1, ppr.parent_profile_id
     FROM profiles p
-    INNER JOIN profile_tree pt ON p.parent_profile_id = pt.id
+    INNER JOIN profile_profile_relations ppr ON p.id = ppr.child_profile_id
+    INNER JOIN profile_tree pt ON ppr.parent_profile_id = pt.id
 )
 SELECT * FROM profile_tree ORDER BY level, id;
 ```
@@ -947,7 +971,7 @@ John Doe（ユーザー）
   └─ 配信者プロフィール
 ```
 
-これらは全てルートプロフィール（`parent_profile_id = NULL`）として作成されます。
+これらは全てルートプロフィール（`profile_profile_relations`に`child_profile_id`として登録されていない）として作成されます。
 
 ### 6.3 プロフィール階層の制限
 
@@ -955,15 +979,15 @@ John Doe（ユーザー）
 
 - **最大階層深度**: 3階層程度を推奨（ルート → 子 → 孫）
 - **循環参照防止**: アプリケーションレベルでチェック
-- **削除時の挙動**: CASCADE削除により、親プロフィール削除時に全子プロフィールも削除
+- **削除時の挙動**: CASCADE削除により、親プロフィール削除時に`profile_profile_relations`の関係も削除
 
-#### アプリケーションレベルでの制御
+#### アプリケーションレベルでの制御（案C）
 
 ```java
 @Service
 public class ProfileService {
 
-    // プロフィール作成時の階層チェック
+    // プロフィール作成時の階層チェック（案C）
     public Profile createChildProfile(Long parentProfileId, ProfileCreateRequest request) {
         Profile parent = profileRepository.findById(parentProfileId)
             .orElseThrow(() -> new ResourceNotFoundException("Parent profile not found"));
@@ -974,13 +998,22 @@ public class ProfileService {
             throw new BusinessException("Maximum profile hierarchy depth exceeded");
         }
 
+        // 子プロフィールを作成（案C: 親参照なし）
         Profile child = Profile.builder()
-            .parentProfile(parent)
             .profileName(request.getProfileName())
-            // ... 他のフィールド
+            // ... 他のフィールド（parentProfileフィールドなし）
             .build();
 
-        return profileRepository.save(child);
+        Profile savedChild = profileRepository.save(child);
+
+        // 案C: profile_profile_relationsに関係を作成
+        ProfileProfileRelation relation = ProfileProfileRelation.builder()
+            .parentProfile(parent)
+            .childProfile(savedChild)
+            .build();
+        profileProfileRelationRepository.save(relation);
+
+        return savedChild;
     }
 
     // 循環参照チェック
@@ -999,10 +1032,11 @@ public class ProfileService {
 
 本データ設計では、以下の拡張を行いました：
 
-### 主要な変更点
+### 主要な変更点（案C採用）
 
 1. **プロフィールの階層構造対応**:
-   - `parent_profile_id` カラム追加（自己参照外部キー）
+   - `ProfileProfileRelation`中間テーブルによる階層管理（案C）
+   - Profilesテーブルはシンプルに保ち、階層は別テーブルで管理
    - プロフィールがプロフィールを親として持つことが可能
 
 2. **ユースケースのサポート**:

@@ -22,7 +22,7 @@
 
 | ソフトウェア | バージョン | インストール方法 |
 |------------|-----------|----------------|
-| Java | 25 (LTS) | [OpenJDK](https://jdk.java.net/25/) |
+| Java | 25 | [OpenJDK](https://jdk.java.net/25/) |
 | Gradle | 8.x | 自動（Gradle Wrapper使用） |
 | Node.js | 20.x LTS | [nodejs.org](https://nodejs.org/) |
 | Docker Desktop | 最新版 | [docker.com](https://www.docker.com/) |

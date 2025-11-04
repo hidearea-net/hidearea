@@ -59,7 +59,7 @@
 
 | レイヤー | 技術 | 備考 |
 |---------|------|------|
-| **バックエンド** | Java 25 (LTS) + Spring Boot 3.x | REST API中心、将来的にWebSocket/SSE/メッセージング対応 |
+| **バックエンド** | Java 25 + Spring Boot 3.x | REST API中心、将来的にWebSocket/SSE/メッセージング対応 |
 | **フロントエンド** | React 18+ + Vite + TypeScript | レスポンシブデザイン、将来PWA対応 |
 | **データベース** | PostgreSQL 15+ | プラグイン方式で切り替え可能（開発環境はH2） |
 | **キャッシュ** | Redis（将来対応） | プラグイン方式で切り替え可能 |
@@ -71,7 +71,7 @@
 
 ### 2.2 開発環境
 
-- **Java**: OpenJDK 25（最新LTS版）
+- **Java**: OpenJDK 25
 - **ビルドツール**: Gradle 8.x（Kotlin DSL）
 - **Node.js**: 20.x LTS
 - **パッケージマネージャー**: npm または pnpm
