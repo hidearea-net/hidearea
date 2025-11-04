@@ -610,14 +610,14 @@ npm run build
 
 ```bash
 cd docker
-docker-compose -f docker-compose.dev.yml up --build
+docker compose -f docker-compose.dev.yml up --build
 ```
 
 #### 本番環境
 
 ```bash
 cd docker
-docker-compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prod.yml up -d --build
 ```
 
 ### 6.3 CI/CDパイプライン（将来対応）

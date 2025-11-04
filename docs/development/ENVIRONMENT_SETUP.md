@@ -485,7 +485,7 @@ EOF
 fi
 
 # Docker Composeで起動
-docker-compose -f docker/docker-compose.dev.yml up -d
+docker compose -f docker/docker-compose.dev.yml up -d
 
 echo ""
 echo "✅ Development environment started!"
@@ -497,7 +497,7 @@ echo "   - PostgreSQL:      localhost:5432"
 echo "   - Swagger UI:      http://localhost:8080/swagger-ui.html"
 echo ""
 echo "📝 Logs:"
-echo "   docker-compose -f docker/docker-compose.dev.yml logs -f"
+echo "   docker compose -f docker/docker-compose.dev.yml logs -f"
 echo ""
 echo "🛑 Stop:"
 echo "   ./scripts/stop.sh"
@@ -562,11 +562,11 @@ echo "🛑 Stopping HideArea..."
 
 # Docker Compose停止
 if [ -f docker/docker-compose.dev.yml ]; then
-    docker-compose -f docker/docker-compose.dev.yml down
+    docker compose -f docker/docker-compose.dev.yml down
 fi
 
 if [ -f docker/docker-compose.prod.yml ]; then
-    docker-compose -f docker/docker-compose.prod.yml down
+    docker compose -f docker/docker-compose.prod.yml down
 fi
 
 # ローカルプロセス停止
@@ -609,7 +609,7 @@ if [ -z "$JWT_SECRET" ] || [ ${#JWT_SECRET} -lt 32 ]; then
 fi
 
 # Docker Composeで起動
-docker-compose -f docker/docker-compose.prod.yml up -d --build
+docker compose -f docker/docker-compose.prod.yml up -d --build
 
 echo ""
 echo "✅ Production environment started!"
@@ -617,7 +617,7 @@ echo ""
 echo "📍 Application: http://localhost"
 echo ""
 echo "📝 Logs:"
-echo "   docker-compose -f docker/docker-compose.prod.yml logs -f"
+echo "   docker compose -f docker/docker-compose.prod.yml logs -f"
 ```
 
 ### 4.5 スクリプトの実行権限付与
@@ -641,10 +641,10 @@ chmod +x scripts/*.sh
 docker info
 
 # コンテナのログ確認
-docker-compose -f docker/docker-compose.dev.yml logs
+docker compose -f docker/docker-compose.dev.yml logs
 
 # コンテナの再起動
-docker-compose -f docker/docker-compose.dev.yml restart
+docker compose -f docker/docker-compose.dev.yml restart
 ```
 
 #### 問題: PostgreSQLに接続できない
@@ -722,12 +722,12 @@ public class WebConfig implements WebMvcConfigurer {
 
 ```bash
 # 全サービスのログ
-docker-compose -f docker/docker-compose.dev.yml logs -f
+docker compose -f docker/docker-compose.dev.yml logs -f
 
 # 特定サービスのログ
-docker-compose -f docker/docker-compose.dev.yml logs -f backend
-docker-compose -f docker/docker-compose.dev.yml logs -f frontend
-docker-compose -f docker/docker-compose.dev.yml logs -f postgres
+docker compose -f docker/docker-compose.dev.yml logs -f backend
+docker compose -f docker/docker-compose.dev.yml logs -f frontend
+docker compose -f docker/docker-compose.dev.yml logs -f postgres
 ```
 
 #### ローカル環境
@@ -744,8 +744,8 @@ tail -f logs/frontend.log
 
 ```bash
 # 開発環境のデータベースをリセット
-docker-compose -f docker/docker-compose.dev.yml down -v
-docker-compose -f docker/docker-compose.dev.yml up -d postgres
+docker compose -f docker/docker-compose.dev.yml down -v
+docker compose -f docker/docker-compose.dev.yml up -d postgres
 
 # Flywayマイグレーションを再実行
 cd backend
@@ -756,7 +756,7 @@ cd backend
 
 ```bash
 # すべてのコンテナ・ボリューム・イメージを削除
-docker-compose -f docker/docker-compose.dev.yml down -v --rmi all
+docker compose -f docker/docker-compose.dev.yml down -v --rmi all
 
 # ビルドキャッシュのクリア
 cd backend
