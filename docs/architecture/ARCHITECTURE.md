@@ -27,47 +27,38 @@
 
 HideAreaプラットフォームは、**マイクロカーネルアーキテクチャ**と**レイヤードアーキテクチャ**を組み合わせた設計を採用しています。
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     プレゼンテーション層                        │
-│              React + TypeScript + Vite (PWA)                │
-└─────────────────────────────────────────────────────────────┘
-                              ↕ REST API (JSON)
-┌─────────────────────────────────────────────────────────────┐
-│                        API Gateway層                         │
-│              Spring Boot + Spring MVC (REST)                │
-└─────────────────────────────────────────────────────────────┘
-                              ↕
-┌─────────────────────────────────────────────────────────────┐
-│                     マイクロカーネル層                          │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │              コアシステム (Core Kernel)                │  │
-│  │   ┌─────────────┐  ┌─────────────┐  ┌──────────┐   │  │
-│  │   │ユーザー管理   │  │プロフィール管理│  │認証・認可  │   │  │
-│  │   └─────────────┘  └─────────────┘  └──────────┘   │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                              ↕                              │
-│              プラグインインターフェース (SPI)                   │
-│                              ↕                              │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │                  プラグインモジュール                     │  │
-│  │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌────────┐ │  │
-│  │  │コミュニティ│ │プロジェクト│ │組織管理   │ │決済     │ │  │
-│  │  │管理      │ │管理      │ │         │ │プラット │ │  │
-│  │  │         │ │         │ │         │ │フォーム │ │  │
-│  │  └──────────┘ └──────────┘ └──────────┘ └────────┘ │  │
-│  └───────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
-                              ↕
-┌─────────────────────────────────────────────────────────────┐
-│                      データアクセス層                          │
-│              Spring Data JPA + Hibernate                    │
-└─────────────────────────────────────────────────────────────┘
-                              ↕
-┌─────────────────────────────────────────────────────────────┐
-│                       データストア層                           │
-│  PostgreSQL (Primary) + Redis (Cache, Future)              │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    FE["プレゼンテーション層<br/>React + TypeScript + Vite (PWA)"]
+    API["API Gateway層<br/>Spring Boot + Spring MVC (REST)"]
+
+    subgraph Microkernel["マイクロカーネル層"]
+        direction TB
+        UM["ユーザー管理"]
+        PM["プロフィール管理"]
+        Auth["認証・認可"]
+        SPI["プラグインインターフェース (SPI)"]
+        Community["コミュニティ管理"]
+        Project["プロジェクト管理"]
+        Org["組織管理"]
+        Payment["決済プラットフォーム"]
+
+        UM -.-> SPI
+        PM -.-> SPI
+        Auth -.-> SPI
+        SPI -.-> Community
+        SPI -.-> Project
+        SPI -.-> Org
+        SPI -.-> Payment
+    end
+
+    JPA["データアクセス層<br/>Spring Data JPA + Hibernate"]
+    DB["データストア層<br/>PostgreSQL (Primary) + Redis (Cache, Future)"]
+
+    FE <-->|REST API JSON| API
+    API <--> Microkernel
+    Microkernel <--> JPA
+    JPA <--> DB
 ```
 
 ### 1.2 主要な設計目標
@@ -168,36 +159,33 @@ public interface PluginRegistry {
 
 ### 3.1 レイヤー構成
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     Presentation Layer                       │
-│  責務: ユーザーインターフェース、HTTP リクエスト/レスポンス処理  │
-│  技術: React, TypeScript, Vite                              │
-└─────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────┐
-│                      API Layer (Controller)                  │
-│  責務: REST API エンドポイント、リクエストバリデーション        │
-│  技術: Spring MVC, @RestController                          │
-└─────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────┐
-│                      Application Layer (Service)             │
-│  責務: ビジネスロジック、トランザクション管理                  │
-│  技術: @Service, @Transactional                             │
-└─────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────┐
-│                      Domain Layer (Entity)                   │
-│  責務: ドメインモデル、ビジネスルール                          │
-│  技術: JPA Entity, @Entity                                  │
-└─────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────┐
-│                   Infrastructure Layer (Repository)          │
-│  責務: データアクセス、外部サービス連携                        │
-│  技術: Spring Data JPA, @Repository                         │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph PresentationLayer["Presentation Layer"]
+        PL["責務: ユーザーインターフェース、HTTP リクエスト/レスポンス処理<br/>技術: React, TypeScript, Vite"]
+    end
+
+    subgraph APILayer["API Layer (Controller)"]
+        AL["責務: REST API エンドポイント、リクエストバリデーション<br/>技術: Spring MVC, @RestController"]
+    end
+
+    subgraph ApplicationLayer["Application Layer (Service)"]
+        AppL["責務: ビジネスロジック、トランザクション管理<br/>技術: @Service, @Transactional"]
+    end
+
+    subgraph DomainLayer["Domain Layer (Entity)"]
+        DL["責務: ドメインモデル、ビジネスルール<br/>技術: JPA Entity, @Entity"]
+    end
+
+    subgraph InfrastructureLayer["Infrastructure Layer (Repository)"]
+        IL["責務: データアクセス、外部サービス連携<br/>技術: Spring Data JPA, @Repository"]
+    end
+
+    PresentationLayer --> APILayer
+    APILayer --> ApplicationLayer
+    ApplicationLayer --> DomainLayer
+    ApplicationLayer --> InfrastructureLayer
+    InfrastructureLayer --> DomainLayer
 ```
 
 ### 3.2 各レイヤーの責務と依存関係
@@ -240,71 +228,53 @@ public class ProfileController {
 
 ### 4.1 開発環境構成
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│                      Developer Machine                        │
-│  ┌────────────────┐              ┌────────────────┐          │
-│  │  Frontend      │              │  Backend       │          │
-│  │  (Vite Dev)    │◄────REST────►│  (Spring Boot) │          │
-│  │  :5173         │              │  :8080         │          │
-│  └────────────────┘              └────────────────┘          │
-│                                           ↓                   │
-│                                   ┌────────────────┐          │
-│                                   │  PostgreSQL    │          │
-│                                   │  :5432         │          │
-│                                   └────────────────┘          │
-└──────────────────────────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph DevMachine["Developer Machine"]
+        Frontend["Frontend<br/>(Vite Dev)<br/>:5173"]
+        Backend["Backend<br/>(Spring Boot)<br/>:8080"]
+        DB["PostgreSQL<br/>:5432"]
+
+        Frontend <-->|REST| Backend
+        Backend --> DB
+    end
 ```
 
 ### 4.2 本番環境構成（Docker Compose）
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│                        Docker Host                            │
-│  ┌────────────────────────────────────────────────────────┐  │
-│  │                     docker-compose.yml                  │  │
-│  │  ┌──────────────┐  ┌──────────────┐  ┌─────────────┐  │  │
-│  │  │   nginx      │  │  backend     │  │  postgres   │  │  │
-│  │  │   (Reverse   │  │  (Spring     │  │  (Primary   │  │  │
-│  │  │    Proxy)    │  │   Boot)      │  │   DB)       │  │  │
-│  │  │   :80, :443  │  │   :8080      │  │   :5432     │  │  │
-│  │  └──────────────┘  └──────────────┘  └─────────────┘  │  │
-│  │         ↓                  ↓                 ↓          │  │
-│  │  ┌──────────────┐  ┌──────────────┐  ┌─────────────┐  │  │
-│  │  │   frontend   │  │              │  │   redis     │  │  │
-│  │  │   (React     │  │              │  │   (Cache)   │  │  │
-│  │  │    SPA)      │  │              │  │   :6379     │  │  │
-│  │  │   :3000      │  │              │  │   (Future)  │  │  │
-│  │  └──────────────┘  └──────────────┘  └─────────────┘  │  │
-│  │                                                         │  │
-│  │  ┌─────────────────────────────────────────────────┐   │  │
-│  │  │           Docker Network (hidearea-net)         │   │  │
-│  │  └─────────────────────────────────────────────────┘   │  │
-│  └────────────────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph DockerHost["Docker Host"]
+        subgraph Compose["docker-compose.yml"]
+            Nginx["nginx<br/>(Reverse Proxy)<br/>:80, :443"]
+            Backend["backend<br/>(Spring Boot)<br/>:8080"]
+            Postgres["postgres<br/>(Primary DB)<br/>:5432"]
+            Frontend["frontend<br/>(React SPA)<br/>:3000"]
+            Redis["redis<br/>(Cache)<br/>:6379<br/>(Future)"]
+
+            subgraph Network["Docker Network (hidearea-net)"]
+            end
+        end
+    end
+
+    Nginx --> Frontend
+    Nginx --> Backend
+    Backend --> Postgres
+    Backend -.->|Future| Redis
 ```
 
 ### 4.3 ネットワークフロー
 
-```
-User Browser
-    ↓ HTTPS (443)
-┌──────────────┐
-│   Nginx      │ ← SSL Termination
-│  (Reverse    │ ← Static File Serving (React SPA)
-│   Proxy)     │ ← /api/* → backend:8080
-└──────────────┘
-    ↓ HTTP (8080)
-┌──────────────┐
-│  Backend     │
-│ (Spring Boot)│ ← REST API
-│              │ ← Business Logic
-└──────────────┘
-    ↓ JDBC (5432)
-┌──────────────┐
-│  PostgreSQL  │
-│  (Primary DB)│
-└──────────────┘
+```mermaid
+flowchart TD
+    Browser["User Browser"]
+    NginxProxy["Nginx (Reverse Proxy)<br/>- SSL Termination<br/>- Static File Serving (React SPA)<br/>- /api/* → backend:8080"]
+    BackendApp["Backend (Spring Boot)<br/>- REST API<br/>- Business Logic"]
+    DB["PostgreSQL<br/>(Primary DB)"]
+
+    Browser -->|HTTPS :443| NginxProxy
+    NginxProxy -->|HTTP :8080| BackendApp
+    BackendApp -->|JDBC :5432| DB
 ```
 
 ---
@@ -371,12 +341,17 @@ com.hidearea.core/
 
 #### 5.1.2 コンポーネント間の依存関係
 
-```
-Controller (API層)
-    ↓ 依存
-Service (アプリケーション層)
-    ↓ 依存
-Repository (インフラ層) ← Domain (ドメイン層)
+```mermaid
+flowchart TD
+    Controller["Controller (API層)"]
+    Service["Service (アプリケーション層)"]
+    Repository["Repository (インフラ層)"]
+    Domain["Domain (ドメイン層)"]
+
+    Controller -->|依存| Service
+    Service -->|依存| Repository
+    Service -->|依存| Domain
+    Repository -->|依存| Domain
 ```
 
 ### 5.2 フロントエンドコンポーネント
@@ -442,120 +417,59 @@ frontend/
 
 ### 6.1 認証フロー（JWT）
 
-```
-┌──────────┐                                               ┌──────────┐
-│  Client  │                                               │  Server  │
-└──────────┘                                               └──────────┘
-     │                                                            │
-     │  1. POST /api/v1/auth/login                              │
-     │     { username, password }                               │
-     ├──────────────────────────────────────────────────────────►
-     │                                                            │
-     │                                   2. ユーザー認証           │
-     │                                      (DB照合)              │
-     │                                                            │
-     │                                   3. JWT生成              │
-     │                                      (秘密鍵で署名)         │
-     │                                                            │
-     │  4. 200 OK                                                │
-     │     { token, user }                                       │
-     ◄────────────────────────────────────────────────────────────┤
-     │                                                            │
-     │  5. 以降のリクエストでJWTを使用                             │
-     │     Authorization: Bearer <token>                         │
-     ├──────────────────────────────────────────────────────────►
-     │                                                            │
-     │                                   6. JWT検証              │
-     │                                      (署名確認、有効期限)    │
-     │                                                            │
-     │  7. レスポンス                                             │
-     ◄────────────────────────────────────────────────────────────┤
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Server
+
+    Client->>Server: 1. POST /api/v1/auth/login<br/>{ username, password }
+    Note over Server: 2. ユーザー認証<br/>(DB照合)
+    Note over Server: 3. JWT生成<br/>(秘密鍵で署名)
+    Server->>Client: 4. 200 OK<br/>{ token, user }
+    Client->>Server: 5. 以降のリクエストでJWTを使用<br/>Authorization: Bearer <token>
+    Note over Server: 6. JWT検証<br/>(署名確認、有効期限)
+    Server->>Client: 7. レスポンス
 ```
 
 ### 6.2 プロフィール作成フロー（案C）
 
-```
-┌──────────┐                                               ┌──────────┐
-│  Client  │                                               │  Server  │
-└──────────┘                                               └──────────┘
-     │                                                            │
-     │  1. POST /api/v1/profiles                                 │
-     │     { profileName, displayName, ... }                     │
-     │     Authorization: Bearer <token>                         │
-     ├──────────────────────────────────────────────────────────►
-     │                                                            │
-     │                                   2. JWT検証              │
-     │                                      → userId取得          │
-     │                                                            │
-     │                                   3. Profileエンティティ作成│
-     │                                      (profiles テーブル)    │
-     │                                                            │
-     │                                   4. UserProfile作成       │
-     │                                      (user_profiles)       │
-     │                                      role = OWNER          │
-     │                                                            │
-     │  5. 201 Created                                           │
-     │     { profile }                                           │
-     ◄────────────────────────────────────────────────────────────┤
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Server
+
+    Client->>Server: 1. POST /api/v1/profiles<br/>{ profileName, displayName, ... }<br/>Authorization: Bearer <token>
+    Note over Server: 2. JWT検証<br/>→ userId取得
+    Note over Server: 3. Profileエンティティ作成<br/>(profiles テーブル)
+    Note over Server: 4. UserProfile作成<br/>(user_profiles)<br/>role = OWNER
+    Server->>Client: 5. 201 Created<br/>{ profile }
 ```
 
 ### 6.3 子プロフィール作成フロー（案C: 階層構造）
 
-```
-┌──────────┐                                               ┌──────────┐
-│  Client  │                                               │  Server  │
-└──────────┘                                               └──────────┘
-     │                                                            │
-     │  1. POST /api/v1/profiles/{parentId}/children            │
-     │     { profileName, displayName, ... }                     │
-     │     Authorization: Bearer <token>                         │
-     ├──────────────────────────────────────────────────────────►
-     │                                                            │
-     │                                   2. 権限チェック          │
-     │                                      (親プロフィールのOWNER?)│
-     │                                                            │
-     │                                   3. Profileエンティティ作成│
-     │                                      (profiles テーブル)    │
-     │                                                            │
-     │                                   4. ProfileProfileRelation作成│
-     │                                      (profile_profile_relations)│
-     │                                      parent_profile_id = parentId│
-     │                                      child_profile_id = newId│
-     │                                                            │
-     │                                   5. UserProfile作成       │
-     │                                      (user_profiles)       │
-     │                                      role = OWNER          │
-     │                                                            │
-     │  6. 201 Created                                           │
-     │     { childProfile }                                      │
-     ◄────────────────────────────────────────────────────────────┤
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Server
+
+    Client->>Server: 1. POST /api/v1/profiles/{parentId}/children<br/>{ profileName, displayName, ... }<br/>Authorization: Bearer <token>
+    Note over Server: 2. 権限チェック<br/>(親プロフィールのOWNER?)
+    Note over Server: 3. Profileエンティティ作成<br/>(profiles テーブル)
+    Note over Server: 4. ProfileProfileRelation作成<br/>(profile_profile_relations)<br/>parent_profile_id = parentId<br/>child_profile_id = newId
+    Note over Server: 5. UserProfile作成<br/>(user_profiles)<br/>role = OWNER
+    Server->>Client: 6. 201 Created<br/>{ childProfile }
 ```
 
 ### 6.4 階層全取得フロー（再帰クエリ）
 
-```
-┌──────────┐                                               ┌──────────┐
-│  Client  │                                               │  Server  │
-└──────────┘                                               └──────────┘
-     │                                                            │
-     │  1. GET /api/v1/profiles/{id}/tree                       │
-     │     Authorization: Bearer <token>                         │
-     ├──────────────────────────────────────────────────────────►
-     │                                                            │
-     │                                   2. 再帰CTE実行           │
-     │                                      (profile_profile_relations)│
-     │                                                            │
-     │                                   WITH RECURSIVE profile_tree AS (│
-     │                                     SELECT ... FROM profiles WHERE id = {id}│
-     │                                     UNION ALL              │
-     │                                     SELECT ... FROM profiles p│
-     │                                     INNER JOIN profile_profile_relations ppr│
-     │                                     INNER JOIN profile_tree pt...│
-     │                                   )                         │
-     │                                                            │
-     │  3. 200 OK                                                │
-     │     { root, children: [ { ... }, { ... } ] }              │
-     ◄────────────────────────────────────────────────────────────┤
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Server
+
+    Client->>Server: 1. GET /api/v1/profiles/{id}/tree<br/>Authorization: Bearer <token>
+    Note over Server: 2. 再帰CTE実行<br/>(profile_profile_relations)<br/>WITH RECURSIVE profile_tree AS (<br/>SELECT ... FROM profiles WHERE id = {id}<br/>UNION ALL<br/>SELECT ... FROM profiles p<br/>INNER JOIN profile_profile_relations ppr<br/>INNER JOIN profile_tree pt...<br/>)
+    Server->>Client: 3. 200 OK<br/>{ root, children: [ { ... }, { ... } ] }
 ```
 
 ---
@@ -571,28 +485,16 @@ frontend/
 - トークンに有効期限を設定（例: 24時間）
 - リフレッシュトークン（将来対応）
 
-```
-JWT構造:
-┌─────────────────────────────────────────────┐
-│  Header                                     │
-│  { "alg": "HS256", "typ": "JWT" }          │
-├─────────────────────────────────────────────┤
-│  Payload                                    │
-│  {                                          │
-│    "sub": "userId",                         │
-│    "username": "john_doe",                  │
-│    "role": "USER",                          │
-│    "iat": 1699000000,                       │
-│    "exp": 1699086400                        │
-│  }                                          │
-├─────────────────────────────────────────────┤
-│  Signature                                  │
-│  HMACSHA256(                                │
-│    base64UrlEncode(header) + "." +          │
-│    base64UrlEncode(payload),                │
-│    secret                                   │
-│  )                                          │
-└─────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph JWT["JWT構造"]
+        Header["Header<br/>{ 'alg': 'HS256', 'typ': 'JWT' }"]
+        Payload["Payload<br/>{<br/>'sub': 'userId',<br/>'username': 'john_doe',<br/>'role': 'USER',<br/>'iat': 1699000000,<br/>'exp': 1699086400<br/>}"]
+        Signature["Signature<br/>HMACSHA256(<br/>base64UrlEncode(header) + '.' +<br/>base64UrlEncode(payload),<br/>secret<br/>)"]
+    end
+
+    Header --> Payload
+    Payload --> Signature
 ```
 
 #### 7.1.2 認可（Authorization）
@@ -648,22 +550,19 @@ public class ProfileController {
 
 ### 7.3 データ保護
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     データ保護レイヤー                          │
-│                                                               │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐          │
-│  │   暗号化     │  │  アクセス制御 │  │   監査ログ   │          │
-│  │  (HTTPS)    │  │   (RBAC)    │  │  (Audit)    │          │
-│  └─────────────┘  └─────────────┘  └─────────────┘          │
-│                                                               │
-│  ┌───────────────────────────────────────────────────────┐   │
-│  │  機密データ:                                           │   │
-│  │  - パスワード: BCrypt ハッシュ化（強度10）             │   │
-│  │  - JWT秘密鍵: 環境変数管理（.env）                    │   │
-│  │  - DB接続情報: Spring Profiles分離                    │   │
-│  └───────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph DataProtection["データ保護レイヤー"]
+        Encryption["暗号化<br/>(HTTPS)"]
+        AccessControl["アクセス制御<br/>(RBAC)"]
+        AuditLog["監査ログ<br/>(Audit)"]
+
+        subgraph Sensitive["機密データ"]
+            Password["パスワード: BCrypt ハッシュ化（強度10）"]
+            JWTSecret["JWT秘密鍵: 環境変数管理（.env）"]
+            DBInfo["DB接続情報: Spring Profiles分離"]
+        end
+    end
 ```
 
 ---
@@ -672,23 +571,26 @@ public class ProfileController {
 
 ### 8.1 水平スケーリング
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│                      Load Balancer                            │
-│                    (Nginx / AWS ALB)                          │
-└──────────────────────────────────────────────────────────────┘
-        ↓              ↓              ↓              ↓
-┌──────────────┐┌──────────────┐┌──────────────┐┌──────────────┐
-│  Backend #1  ││  Backend #2  ││  Backend #3  ││  Backend #N  │
-│ (Stateless)  ││ (Stateless)  ││ (Stateless)  ││ (Stateless)  │
-└──────────────┘└──────────────┘└──────────────┘└──────────────┘
-        ↓              ↓              ↓              ↓
-        └──────────────┴──────────────┴──────────────┘
-                              ↓
-┌──────────────────────────────────────────────────────────────┐
-│                      PostgreSQL (Primary)                     │
-│                  + Read Replicas (将来対応)                    │
-└──────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    LB["Load Balancer<br/>(Nginx / AWS ALB)"]
+
+    Backend1["Backend #1<br/>(Stateless)"]
+    Backend2["Backend #2<br/>(Stateless)"]
+    Backend3["Backend #3<br/>(Stateless)"]
+    BackendN["Backend #N<br/>(Stateless)"]
+
+    DB["PostgreSQL (Primary)<br/>+ Read Replicas (将来対応)"]
+
+    LB --> Backend1
+    LB --> Backend2
+    LB --> Backend3
+    LB --> BackendN
+
+    Backend1 --> DB
+    Backend2 --> DB
+    Backend3 --> DB
+    BackendN --> DB
 ```
 
 **ステートレス設計**:
@@ -698,27 +600,22 @@ public class ProfileController {
 
 ### 8.2 キャッシュ戦略（将来対応）
 
-```
-┌──────────────┐
-│   Client     │
-└──────────────┘
-        ↓
-┌──────────────┐
-│   Backend    │
-└──────────────┘
-        ↓
-┌──────────────────────────────────────────┐
-│  キャッシュレイヤー (Redis)                │
-│  ┌────────────────────────────────────┐  │
-│  │ L1: ユーザー情報（TTL: 5分）        │  │
-│  │ L2: プロフィール情報（TTL: 10分）   │  │
-│  │ L3: 公開プロフィール一覧（TTL: 30分）│  │
-│  └────────────────────────────────────┘  │
-└──────────────────────────────────────────┘
-        ↓ Cache Miss
-┌──────────────┐
-│  PostgreSQL  │
-└──────────────┘
+```mermaid
+flowchart TD
+    Client["Client"]
+    Backend["Backend"]
+
+    subgraph CacheLayer["キャッシュレイヤー (Redis)"]
+        L1["L1: ユーザー情報（TTL: 5分）"]
+        L2["L2: プロフィール情報（TTL: 10分）"]
+        L3["L3: 公開プロフィール一覧（TTL: 30分）"]
+    end
+
+    DB["PostgreSQL"]
+
+    Client --> Backend
+    Backend --> CacheLayer
+    CacheLayer -->|Cache Miss| DB
 ```
 
 ### 8.3 データベース最適化
@@ -746,49 +643,36 @@ public class ProfileController {
 
 ### 9.2 CI/CD パイプライン（将来対応）
 
-```
-┌────────────┐
-│  Git Push  │
-└────────────┘
-      ↓
-┌────────────────────────────────────────────┐
-│           CI: GitHub Actions               │
-│  ┌──────────────────────────────────────┐  │
-│  │  1. Build                            │  │
-│  │     - Gradle: ./gradlew build        │  │
-│  │     - npm: npm run build             │  │
-│  ├──────────────────────────────────────┤  │
-│  │  2. Test                             │  │
-│  │     - Unit Test                      │  │
-│  │     - Integration Test               │  │
-│  ├──────────────────────────────────────┤  │
-│  │  3. Code Quality                     │  │
-│  │     - SonarQube                      │  │
-│  │     - ESLint                         │  │
-│  ├──────────────────────────────────────┤  │
-│  │  4. Security Scan                    │  │
-│  │     - OWASP Dependency Check         │  │
-│  └──────────────────────────────────────┘  │
-└────────────────────────────────────────────┘
-      ↓
-┌────────────────────────────────────────────┐
-│           CD: Docker Compose               │
-│  ┌──────────────────────────────────────┐  │
-│  │  1. Build Docker Images              │  │
-│  │     - backend:latest                 │  │
-│  │     - frontend:latest                │  │
-│  ├──────────────────────────────────────┤  │
-│  │  2. Deploy to Environment            │  │
-│  │     - docker-compose up -d           │  │
-│  │     - Rolling Update (Blue-Green)    │  │
-│  └──────────────────────────────────────┘  │
-└────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    GitPush["Git Push"]
+
+    subgraph CI["CI: GitHub Actions"]
+        Build["1. Build<br/>- Gradle: ./gradlew build<br/>- npm: npm run build"]
+        Test["2. Test<br/>- Unit Test<br/>- Integration Test"]
+        Quality["3. Code Quality<br/>- SonarQube<br/>- ESLint"]
+        Security["4. Security Scan<br/>- OWASP Dependency Check"]
+
+        Build --> Test
+        Test --> Quality
+        Quality --> Security
+    end
+
+    subgraph CD["CD: Docker Compose"]
+        DockerBuild["1. Build Docker Images<br/>- backend:latest<br/>- frontend:latest"]
+        Deploy["2. Deploy to Environment<br/>- docker-compose up -d<br/>- Rolling Update (Blue-Green)"]
+
+        DockerBuild --> Deploy
+    end
+
+    GitPush --> CI
+    CI --> CD
 ```
 
 ### 9.3 Docker コンテナ構成
 
 ```yaml
-# docker-compose.yml
+# docker-compose.yml (使用時は docker compose コマンドを使用)
 version: '3.8'
 
 services:
