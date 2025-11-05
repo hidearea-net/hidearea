@@ -1,6 +1,6 @@
 # API仕様書
 
-**最終更新日**: 2025-11-04
+**最終更新日**: 2025-11-05
 **APIバージョン**: v1
 
 ---
@@ -75,9 +75,11 @@ Authorization: Bearer {token}
 |---------|---------|--------------|------|------|
 | **認証** | POST | `/auth/register` | - | ユーザー登録 |
 | **認証** | POST | `/auth/login` | - | ログイン（JWT取得） |
+| **認証** | POST | `/auth/refresh` | - | トークンリフレッシュ |
 | **認証** | POST | `/auth/logout` | ✓ | ログアウト |
 | **認証** | GET | `/auth/me` | ✓ | 現在のユーザー情報取得 |
-| **ユーザー** | GET | `/users/{id}` | ✓ | ユーザー詳細取得 |
+| **ユーザー** | GET | `/users/{id}` | ✓ (ADMIN) | ユーザー詳細取得（管理者のみ） |
+| **ユーザー** | GET | `/users/me` | ✓ | 自分のユーザー情報取得 |
 | **ユーザー** | PUT | `/users/{id}` | ✓ | ユーザー情報更新 |
 | **ユーザー** | DELETE | `/users/{id}` | ✓ | ユーザー削除 |
 | **ユーザー** | PUT | `/users/{id}/password` | ✓ | パスワード変更 |
@@ -301,13 +303,68 @@ Authorization: Bearer {token}
 
 ---
 
-### 3.4 トークンリフレッシュ（将来対応）
+### 3.4 トークンリフレッシュ
 
-アクセストークンを更新します。
+期限切れのアクセストークンを新しいトークンに更新します。
 
 **エンドポイント**: `POST /auth/refresh`
 
-**認証**: 必要（リフレッシュトークン）
+**認証**: 不要（リフレッシュトークンをリクエストボディに含める）
+
+#### リクエスト
+
+```json
+{
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+**フィールド**:
+| フィールド | 型 | 必須 | 説明 |
+|-----------|---|------|------|
+| refreshToken | string | ✓ | リフレッシュトークン |
+
+#### レスポンス (200 OK)
+
+```json
+{
+  "status": "success",
+  "data": {
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "tokenType": "Bearer",
+    "expiresIn": 3600
+  }
+}
+```
+
+**フィールド説明**:
+| フィールド | 型 | 説明 |
+|-----------|---|------|
+| accessToken | string | 新しいアクセストークン（有効期限: 1時間） |
+| refreshToken | string | 新しいリフレッシュトークン（ローテーション） |
+| tokenType | string | トークンタイプ（"Bearer"固定） |
+| expiresIn | integer | アクセストークンの有効期限（秒） |
+
+#### エラーレスポンス
+
+**401 Unauthorized** - リフレッシュトークンが無効または期限切れ
+
+```json
+{
+  "status": "error",
+  "error": {
+    "code": "INVALID_REFRESH_TOKEN",
+    "message": "Refresh token is invalid or expired"
+  },
+  "timestamp": "2025-11-05T10:00:00Z"
+}
+```
+
+**備考**:
+- リフレッシュトークンは使用後に無効化され、新しいリフレッシュトークンが発行されます（トークンローテーション）
+- リフレッシュトークンの有効期限は30日間
+- 詳細は [DESIGN_DECISIONS.md](../DESIGN_DECISIONS.md#21-トークンリフレッシュ機構) を参照
 
 ---
 
@@ -329,7 +386,6 @@ Authorization: Bearer {token}
   "data": {
     "id": 1,
     "username": "johndoe",
-    "email": "john@example.com",
     "role": "USER",
     "enabled": true,
     "createdAt": "2025-11-04T10:00:00Z",
@@ -337,6 +393,8 @@ Authorization: Bearer {token}
   }
 }
 ```
+
+**備考**: メールアドレスは`User`エンティティではなく、各`Profile`に紐づけて管理されます。
 
 ---
 
@@ -529,11 +587,16 @@ Authorization: Bearer {token}
 
 #### クエリパラメータ
 
-| パラメータ | 型 | 必須 | 説明 |
-|-----------|---|------|------|
-| profileType | string | - | フィルター: PERSONAL, BUSINESS |
-| page | number | - | ページ番号（デフォルト: 0） |
-| size | number | - | ページサイズ（デフォルト: 20） |
+| パラメータ | 型 | 必須 | デフォルト | 説明 |
+|-----------|---|------|-----------|------|
+| profileType | string | - | - | フィルター: PERSONAL, BUSINESS |
+| page | number | - | 0 | ページ番号（0始まり） |
+| size | number | - | 20 | ページサイズ（最大: 100） |
+| sort | string | - | createdAt,desc | ソート順（形式: `{field},{direction}`）<br>例: `createdAt,desc`, `profileName,asc` |
+
+**ページネーション方式**: オフセットベース（Spring Data JPA標準）
+
+**備考**: 詳細は [DESIGN_DECISIONS.md](../DESIGN_DECISIONS.md#22-ページネーション実装) を参照
 
 #### レスポンス (200 OK)
 
@@ -672,7 +735,7 @@ Authorization: Bearer {token}
 
 指定されたプロフィールを削除します（OWNER権限必要）。
 
-**エンドポイント**: `DELETE /profiles/{id}`
+**エンドポイント**: `DELETE /profiles/{id}?cascadeDelete={boolean}`
 
 **認証**: 必要（OWNER権限）
 
@@ -682,15 +745,36 @@ Authorization: Bearer {token}
 |-----------|---|------|
 | id | number | プロフィールID |
 
+#### クエリパラメータ
+
+| パラメータ | 型 | 必須 | デフォルト | 説明 |
+|-----------|---|------|-----------|------|
+| cascadeDelete | boolean | - | false | 子プロフィールも一緒に削除するか |
+
+**動作**:
+- `cascadeDelete=true`: 指定されたプロフィールとすべての子プロフィールを削除
+- `cascadeDelete=false` (デフォルト): 指定されたプロフィールのみ削除し、子プロフィールはルートプロフィールに変換
+
 #### レスポンス (200 OK)
 
 ```json
 {
   "status": "success",
-  "data": null,
+  "data": {
+    "deletedProfileId": 123,
+    "deletedChildProfileIds": [124, 125],
+    "orphanedChildProfileIds": []
+  },
   "message": "Profile deleted successfully"
 }
 ```
+
+**フィールド説明**:
+| フィールド | 型 | 説明 |
+|-----------|---|------|
+| deletedProfileId | number | 削除されたプロフィールID |
+| deletedChildProfileIds | number[] | 削除された子プロフィールID一覧（cascadeDelete=trueの場合） |
+| orphanedChildProfileIds | number[] | ルート化された子プロフィールID一覧（cascadeDelete=falseの場合） |
 
 #### エラーレスポンス
 
@@ -698,6 +782,8 @@ Authorization: Bearer {token}
 |-----------|--------|------|
 | 404 | PROFILE_NOT_FOUND | プロフィールが見つからない |
 | 403 | INSUFFICIENT_PERMISSIONS | OWNER権限がない |
+
+**備考**: 詳細は [DESIGN_DECISIONS.md](../DESIGN_DECISIONS.md#12-プロフィール階層の削除動作) を参照
 
 ---
 

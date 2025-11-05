@@ -1,6 +1,6 @@
 # データ設計書
 
-**最終更新日**: 2025-11-04
+**最終更新日**: 2025-11-05
 
 ---
 
@@ -30,6 +30,10 @@
 | enabled | BOOLEAN | NOT NULL, DEFAULT TRUE | アカウント有効フラグ |
 | created_at | TIMESTAMP | NOT NULL | 作成日時 |
 | updated_at | TIMESTAMP | NOT NULL | 更新日時 |
+
+**設計方針**:
+- **emailフィールドは不要**: 認証には`username`を使用。メールアドレスは各プロフィールに紐づく
+- **プロフィールごとのemail**: ビジネス用、個人用など異なるメールアドレスを使い分けるため、`Profile`エンティティで管理
 
 #### Java エンティティ実装
 
@@ -120,6 +124,7 @@ public enum UserRole {
 - **自己参照外部キーを使用しない**: プロフィール本体テーブルはシンプルに保つ
 - **階層構造は別テーブルで管理**: `profile_profile_relations` テーブルで管理
 - **初学者にも理解しやすい**: 「多対多」の中間テーブルと同じパターン
+- **emailフィールドの目的**: プロフィールごとに異なる連絡先メールアドレスを設定可能（ビジネス用、個人用など）
 
 #### Java エンティティ実装
 
@@ -195,6 +200,8 @@ public class Profile {
 
 #### ProfileType Enum
 
+**設計方針**: Enumはデータベーステーブルで管理する（動的な型追加・管理を可能にする）
+
 ```java
 package net.hidearea.core.domain.entity;
 
@@ -203,6 +210,25 @@ public enum ProfileType {
     BUSINESS    // ビジネス用プロフィール
 }
 ```
+
+**マスタテーブル定義**（将来的にEnumの代わりに使用）:
+```sql
+CREATE TABLE profile_types (
+    code VARCHAR(50) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    display_order INT NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 初期データ
+INSERT INTO profile_types (code, name, description, display_order) VALUES
+('PERSONAL', '個人用プロフィール', 'Personal profile for individuals', 1),
+('BUSINESS', 'ビジネス用プロフィール', 'Business profile for organizations', 2);
+```
+
+**注**: フェーズ1ではJava Enumを使用し、フェーズ2以降でテーブル管理に移行することを推奨。詳細は [DESIGN_DECISIONS.md](../DESIGN_DECISIONS.md#14-enumのテーブル管理) を参照。
 
 ---
 
@@ -272,6 +298,8 @@ public class UserProfile {
 
 #### RoleInProfile Enum
 
+**設計方針**: Enumはデータベーステーブルで管理する（将来的な権限種別の追加・管理を可能にする）
+
 ```java
 package net.hidearea.core.domain.entity;
 
@@ -280,6 +308,26 @@ public enum RoleInProfile {
     MEMBER   // プロフィールメンバー（参加者）
 }
 ```
+
+**マスタテーブル定義**（将来的にEnumの代わりに使用）:
+```sql
+CREATE TABLE permissions (
+    code VARCHAR(50) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    category VARCHAR(50),
+    display_order INT NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 初期データ
+INSERT INTO permissions (code, name, description, category, display_order) VALUES
+('OWNER', 'プロフィール所有者', 'Full control over profile', 'PROFILE_ROLE', 1),
+('MEMBER', 'プロフィールメンバー', 'Member of the profile', 'PROFILE_ROLE', 2);
+```
+
+**注**: フェーズ1ではJava Enumを使用し、フェーズ2以降でテーブル管理に移行することを推奨。詳細は [DESIGN_DECISIONS.md](../DESIGN_DECISIONS.md#14-enumのテーブル管理) を参照。
 
 ---
 
@@ -306,6 +354,10 @@ public enum RoleInProfile {
 - **明示的な関連テーブル**: 「親プロフィール」と「子プロフィール」の関連を明確に管理
 - **初学者に優しい**: 「多対多」の中間テーブルと同じパターン（自己参照外部キーを使用しない）
 - **循環参照の防止**: アプリケーション層でバリデーション実装
+- **削除動作**: 親プロフィール削除時の挙動はAPI経由で選択可能
+  - `cascadeDelete=true`: 子プロフィールも削除
+  - `cascadeDelete=false` (デフォルト): 子プロフィールをルートプロフィールに変換（`profile_profile_relations`のレコードのみ削除）
+  - 詳細は [DESIGN_DECISIONS.md](../DESIGN_DECISIONS.md#12-プロフィール階層の削除動作) を参照
 
 #### Java エンティティ実装
 
@@ -362,7 +414,6 @@ public class ProfileProfileRelation {
 ├─────────────────────┤
 │ id (PK)             │
 │ username (UNIQUE)   │
-│ email (UNIQUE)      │
 │ password_hash       │
 │ role                │
 │ enabled             │
@@ -392,11 +443,12 @@ public class ProfileProfileRelation {
 │      Profile        │ ◄─────* │ ProfileProfileRelation         │ ◄── 中間テーブル②（プロフィール階層）
 ├─────────────────────┤         ├────────────────────────────────┤
 │ id (PK)             │ *─────► │ id (PK)                        │
-│ profile_name        │         │ parent_profile_id (FK)         │
-│ display_name        │         │ child_profile_id (FK)          │
-│ bio                 │         │ created_at                     │
-│ avatar_url          │         └────────────────────────────────┘
-│ profile_type        │              親(1) : 子(*)
+│ email (UNIQUE)      │         │ parent_profile_id (FK)         │
+│ profile_name        │         │ child_profile_id (FK)          │
+│ display_name        │         │ created_at                     │
+│ bio                 │         └────────────────────────────────┘
+│ avatar_url          │              親(1) : 子(*)
+│ profile_type        │
 │ is_public           │
 │ created_at          │
 │ updated_at          │
@@ -411,7 +463,7 @@ public class ProfileProfileRelation {
 ### 2.2 物理ER図（DDL）- 案C採用
 
 ```sql
--- Users テーブル
+-- Users テーブル（emailフィールドなし）
 CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
@@ -422,7 +474,7 @@ CREATE TABLE users (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- Profiles テーブル（シンプル構造: 自己参照なし）
+-- Profiles テーブル（シンプル構造: 自己参照なし、emailフィールドあり）
 CREATE TABLE profiles (
     id BIGSERIAL PRIMARY KEY,
     email VARCHAR(100) UNIQUE NOT NULL,
@@ -524,9 +576,7 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByUsername(String username);
-    Optional<User> findByEmail(String email);
     boolean existsByUsername(String username);
-    boolean existsByEmail(String email);
     Optional<User> findByUsernameAndEnabledTrue(String username);
 }
 ```
@@ -547,6 +597,10 @@ import java.util.List;
 
 @Repository
 public interface ProfileRepository extends JpaRepository<Profile, Long> {
+
+    // メールアドレスで検索
+    Optional<Profile> findByEmail(String email);
+    boolean existsByEmail(String email);
 
     // プロフィールタイプで検索
     List<Profile> findByProfileType(ProfileType profileType);
@@ -742,7 +796,6 @@ public interface ProfileProfileRelationRepository extends JpaRepository<ProfileP
 
 ```sql
 CREATE INDEX idx_users_username ON users(username);
-CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_enabled ON users(enabled) WHERE enabled = TRUE;
 CREATE INDEX idx_users_created_at ON users(created_at);
 ```
@@ -750,6 +803,9 @@ CREATE INDEX idx_users_created_at ON users(created_at);
 #### Profiles テーブル
 
 ```sql
+-- メールアドレスでの検索用
+CREATE INDEX idx_profiles_email ON profiles(email);
+
 -- プロフィールタイプでのフィルタリング用
 CREATE INDEX idx_profiles_profile_type ON profiles(profile_type);
 
@@ -794,11 +850,10 @@ CREATE INDEX idx_ppr_created_at ON profile_profile_relations(created_at);
 #### V1__init_schema.sql
 
 ```sql
--- Users テーブル
+-- Users テーブル（emailフィールドなし）
 CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     role VARCHAR(20) NOT NULL DEFAULT 'USER',
     enabled BOOLEAN NOT NULL DEFAULT TRUE,
@@ -806,9 +861,10 @@ CREATE TABLE users (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- Profiles テーブル（案C: シンプル構造、階層は別テーブルで管理）
+-- Profiles テーブル（案C: シンプル構造、階層は別テーブルで管理、emailフィールドあり）
 CREATE TABLE profiles (
     id BIGSERIAL PRIMARY KEY,
+    email VARCHAR(100) UNIQUE NOT NULL,
     profile_name VARCHAR(100) NOT NULL,
     display_name VARCHAR(100),
     bio TEXT,
@@ -851,9 +907,9 @@ CREATE TABLE profile_profile_relations (
 
 -- Indexes
 CREATE INDEX idx_users_username ON users(username);
-CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_enabled ON users(enabled) WHERE enabled = TRUE;
 
+CREATE INDEX idx_profiles_email ON profiles(email);
 CREATE INDEX idx_profiles_profile_type ON profiles(profile_type);
 CREATE INDEX idx_profiles_is_public ON profiles(is_public) WHERE is_public = TRUE;
 CREATE INDEX idx_profiles_profile_name ON profiles(profile_name);
@@ -872,20 +928,20 @@ CREATE INDEX idx_ppr_created_at ON profile_profile_relations(created_at);
 
 ```sql
 -- サンプルユーザー（パスワード: password123）
-INSERT INTO users (username, email, password_hash, role, enabled) VALUES
-('admin', 'admin@hidearea.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'ADMIN', TRUE),
-('john_doe', 'john@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'USER', TRUE),
-('jane_smith', 'jane@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'USER', TRUE);
+INSERT INTO users (username, password_hash, role, enabled) VALUES
+('admin', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'ADMIN', TRUE),
+('john_doe', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'USER', TRUE),
+('jane_smith', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'USER', TRUE);
 
--- サンプルプロフィール（案C: 全てルートプロフィールとして作成）
-INSERT INTO profiles (id, profile_name, display_name, bio, profile_type, is_public) VALUES
-(1, 'john-personal', 'John Doe', 'Software Engineer', 'PERSONAL', TRUE),
-(2, 'acme-corp', 'ACME Corporation', 'Building the future', 'BUSINESS', TRUE),
-(3, 'jane-photographer', 'Jane Smith - Photographer', 'Professional photographer', 'PERSONAL', TRUE),
-(4, 'acme-mascot-alpha', 'ACME Mascot Alpha', 'Official mascot character', 'PERSONAL', TRUE),
-(5, 'acme-mascot-beta', 'ACME Mascot Beta', 'Second mascot character', 'PERSONAL', TRUE),
-(6, 'acme-official', 'ACME Official Account', 'Official announcements', 'BUSINESS', TRUE),
-(7, 'alpha-mini', 'Alpha Mini', 'Mini version of Alpha', 'PERSONAL', TRUE);
+-- サンプルプロフィール（案C: 全てルートプロフィールとして作成、emailフィールドあり）
+INSERT INTO profiles (id, email, profile_name, display_name, bio, profile_type, is_public) VALUES
+(1, 'john@example.com', 'john-personal', 'John Doe', 'Software Engineer', 'PERSONAL', TRUE),
+(2, 'contact@acme-corp.example', 'acme-corp', 'ACME Corporation', 'Building the future', 'BUSINESS', TRUE),
+(3, 'jane.photo@example.com', 'jane-photographer', 'Jane Smith - Photographer', 'Professional photographer', 'PERSONAL', TRUE),
+(4, 'alpha@acme-corp.example', 'acme-mascot-alpha', 'ACME Mascot Alpha', 'Official mascot character', 'PERSONAL', TRUE),
+(5, 'beta@acme-corp.example', 'acme-mascot-beta', 'ACME Mascot Beta', 'Second mascot character', 'PERSONAL', TRUE),
+(6, 'official@acme-corp.example', 'acme-official', 'ACME Official Account', 'Official announcements', 'BUSINESS', TRUE),
+(7, 'alpha-mini@acme-corp.example', 'alpha-mini', 'Alpha Mini', 'Mini version of Alpha', 'PERSONAL', TRUE);
 
 -- プロフィール階層の作成（案C: profile_profile_relationsテーブル使用）
 INSERT INTO profile_profile_relations (parent_profile_id, child_profile_id) VALUES
@@ -978,8 +1034,15 @@ John Doe（ユーザー）
 #### 推奨事項
 
 - **最大階層深度**: 3階層程度を推奨（ルート → 子 → 孫）
+  - **バリデーションは不要**: これは推奨事項であり、技術的制約ではない
+  - **UI上の警告**: 3階層を超える場合、UIで警告メッセージを表示することを推奨
+  - **理由**: 深い階層はUI表示が複雑になりユーザー体験が低下するが、強制はしない
 - **循環参照防止**: アプリケーションレベルでチェック
-- **削除時の挙動**: CASCADE削除により、親プロフィール削除時に`profile_profile_relations`の関係も削除
+- **削除時の挙動**:
+  - API経由で選択可能（`cascadeDelete`パラメータ）
+  - `cascadeDelete=true`: 子プロフィールも一緒に削除
+  - `cascadeDelete=false` (デフォルト): 子プロフィールをルートプロフィールに変換
+  - 詳細は [DESIGN_DECISIONS.md](../DESIGN_DECISIONS.md#12-プロフィール階層の削除動作) を参照
 
 #### アプリケーションレベルでの制御（案C）
 
@@ -992,10 +1055,11 @@ public class ProfileService {
         Profile parent = profileRepository.findById(parentProfileId)
             .orElseThrow(() -> new ResourceNotFoundException("Parent profile not found"));
 
-        // 階層深度チェック
+        // 階層深度チェック（警告のみ、エラーにはしない）
         int depth = getProfileDepth(parentProfileId);
         if (depth >= MAX_DEPTH) {
-            throw new BusinessException("Maximum profile hierarchy depth exceeded");
+            log.warn("Profile hierarchy depth ({}) exceeds recommended maximum ({})", depth, MAX_DEPTH);
+            // 注: バリデーションエラーは発生させない（推奨事項のため）
         }
 
         // 子プロフィールを作成（案C: 親参照なし）

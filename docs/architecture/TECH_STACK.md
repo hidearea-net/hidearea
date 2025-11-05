@@ -1,6 +1,6 @@
 # 技術スタック詳細
 
-**最終更新日**: 2025-11-04
+**最終更新日**: 2025-11-05
 
 ---
 
@@ -216,6 +216,40 @@ public record UserCreateRequest(
 - **Swagger UI**: ブラウザでのAPI動作確認
 - **アクセス**: `http://localhost:8080/swagger-ui.html`
 
+### 1.8 ロギング
+
+#### SLF4J + Logback（採用決定）
+
+- **選定理由**:
+  - **Spring Bootデフォルト**: 追加設定不要
+  - **成熟した安定性**: 長期運用実績
+  - **設定が柔軟**: XML/Groovyによる詳細設定
+  - **パフォーマンス良好**: 非同期ロギング対応
+
+- **ログレベル設定**:
+
+| 環境 | ログレベル | 出力先 |
+|------|----------|--------|
+| 開発環境 | DEBUG | Console |
+| 本番環境 | INFO | Console + File |
+| エラー | ERROR | Console + File + Alert |
+
+- **設定例** (`application.yml`):
+
+```yaml
+logging:
+  level:
+    root: INFO
+    net.hidearea: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/hidearea.log
+```
+
+**備考**: 詳細は [DESIGN_DECISIONS.md](../DESIGN_DECISIONS.md#32-ロギングフレームワーク) を参照
+
 ---
 
 ## 2. フロントエンド技術
@@ -257,22 +291,23 @@ public record UserCreateRequest(
 
 ### 2.2 UIライブラリ
 
-#### Material-UI (MUI) または shadcn/ui
-
-**推奨: shadcn/ui**
+#### shadcn/ui（採用決定）
 
 - **選定理由**:
-  - コンポーネントをプロジェクトにコピー（依存関係が少ない）
-  - Tailwind CSSベース
-  - カスタマイズ容易
-  - TypeScript完全対応
+  - **コンポーネント所有権**: プロジェクト内にコピーされるため完全にカスタマイズ可能
+  - **TypeScriptファースト**: 型安全性が高い
+  - **Tailwind CSSベース**: 既存選定技術と一致
+  - **アクセシビリティ標準装備**: Radix UIプリミティブを使用
+  - **バンドルサイズ最小**: 必要なコンポーネントのみインストール
+  - **モダンなデザイン**: ダークモード対応容易
+  - **学習曲線**: ドキュメント充実、コミュニティ活発
 
-**代替: Material-UI (MUI)**
+- **主要コンポーネント**:
+  - Button, Input, Dialog, Dropdown, Table, Card, Toast
+  - Form系（React Hook Form統合）
+  - Navigation（Tabs, Menu, Sidebar）
 
-- **選定理由**:
-  - Googleのマテリアルデザイン準拠
-  - 豊富なコンポーネント
-  - アクセシビリティ対応
+**備考**: 詳細な選定理由は [DESIGN_DECISIONS.md](../DESIGN_DECISIONS.md#31-uiライブラリ) を参照
 
 ### 2.3 状態管理
 
@@ -398,27 +433,32 @@ const LoginPage = () => {
   - パーティショニング
   - レプリケーション
 
-### 3.2 開発環境: H2 Database
+### 3.2 テスト環境: H2 Database
 
 - **選定理由**:
-  - インメモリDB（高速）
+  - インメモリDB（高速なテスト実行）
   - Spring Boot標準サポート
-  - PostgreSQL互換モード
+  - PostgreSQL互換モード使用可能
+  - CIパイプラインでのセットアップ不要
+  - 開発者環境での依存性最小化
 
-- **設定例** (`application-dev.yml`):
+- **用途**: 統合テスト専用（開発環境ではPostgreSQLを使用）
+
+- **設定例** (`application-test.yml`):
 
 ```yaml
 spring:
   datasource:
-    url: jdbc:h2:mem:hidearea_dev
+    url: jdbc:h2:mem:testdb;MODE=PostgreSQL
     driver-class-name: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
   h2:
     console:
-      enabled: true
-      path: /h2-console
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+      enabled: false
 ```
+
+**備考**: 複雑なSQLクエリ（ウィンドウ関数など）のテストではTestcontainersの併用を検討。詳細は [DESIGN_DECISIONS.md](../DESIGN_DECISIONS.md#33-テストデータベース) を参照。
 
 ### 3.3 マイグレーション
 

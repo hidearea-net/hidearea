@@ -60,19 +60,23 @@ HideAreaは、マイクロカーネルアーキテクチャを採用したマル
    → システム全体のアーキテクチャ、レイヤー構成、コンポーネント設計
    ⭐ 最も重要: このドキュメントを最初に熟読してください
 
-4. docs/architecture/DATA_DESIGN.md
+4. docs/DESIGN_DECISIONS.md
+   → 重要な設計決定の記録と根拠（必読）
+   ⭐ 設計の曖昧性を解消し、実装方針を明確化
+
+5. docs/architecture/DATA_DESIGN.md
    → データベース設計、エンティティ、ER図、リポジトリパターン
 
-5. docs/architecture/PACKAGE_DESIGN.md
+6. docs/architecture/PACKAGE_DESIGN.md
    → パッケージ構造、APIバージョニング、命名規約
 ```
 
-**目的**: システムの構造、データモデル、コード配置ルールを理解する。
+**目的**: システムの構造、設計決定、データモデル、コード配置ルールを理解する。
 
 #### ステップ3: API仕様の確認（30分）
 
 ```
-6. docs/api/API_SPECIFICATION.md
+7. docs/api/API_SPECIFICATION.md
    → REST API仕様、エンドポイント一覧、リクエスト/レスポンス形式
 ```
 
@@ -81,10 +85,10 @@ HideAreaは、マイクロカーネルアーキテクチャを採用したマル
 #### ステップ4: 環境構築（1時間）
 
 ```
-7. docs/development/ENVIRONMENT_SETUP.md
+8. docs/development/ENVIRONMENT_SETUP.md
    → 開発環境のセットアップ手順、ツールのインストール
 
-8. docs/development/DEVELOPMENT_GUIDE.md
+9. docs/development/DEVELOPMENT_GUIDE.md
    → 開発ワークフロー、コーディング規約、テスト方法
 ```
 
@@ -93,8 +97,8 @@ HideAreaは、マイクロカーネルアーキテクチャを採用したマル
 #### ステップ5: 実装開始
 
 ```
-9. docs/development/IMPLEMENTATION_CHECKLIST.md
-   → MVPフェーズの実装チェックリスト、優先順位
+10. docs/development/IMPLEMENTATION_CHECKLIST.md
+    → MVPフェーズの実装チェックリスト、優先順位
 ```
 
 **目的**: 実装すべき項目を順番に進める。

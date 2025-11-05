@@ -1,6 +1,6 @@
 # パッケージ設計書
 
-**最終更新日**: 2025-11-04
+**最終更新日**: 2025-11-05
 
 ---
 
@@ -121,7 +121,7 @@ net.hidearea.core/
 #### 2.2.1 APIバージョン別パッケージ
 
 ```
-com.hidearea.core.api/
+net.hidearea.core.api/
 ├── v1/
 │   ├── controller/
 │   │   ├── AuthController.java
@@ -148,9 +148,9 @@ com.hidearea.core.api/
 ```java
 package net.hidearea.core.api.v1.controller;
 
-import com.hidearea.core.api.v1.dto.request.LoginRequest;
-import com.hidearea.core.api.v1.dto.response.AuthResponse;
-import com.hidearea.core.service.AuthService;
+import net.hidearea.core.api.v1.dto.request.LoginRequest;
+import net.hidearea.core.api.v1.dto.response.AuthResponse;
+import net.hidearea.core.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -182,9 +182,9 @@ public class AuthController {
 ```java
 package net.hidearea.core.api.v2.controller;
 
-import com.hidearea.core.api.v2.dto.request.LoginRequest;
-import com.hidearea.core.api.v2.dto.response.AuthResponse;
-import com.hidearea.core.service.AuthService;
+import net.hidearea.core.api.v2.dto.request.LoginRequest;
+import net.hidearea.core.api.v2.dto.response.AuthResponse;
+import net.hidearea.core.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -274,15 +274,15 @@ public class AuthResponse {
 ```java
 package net.hidearea.core.service;
 
-import com.hidearea.core.api.v1.dto.request.LoginRequest;
-import com.hidearea.core.api.v1.dto.response.AuthResponse;
+import net.hidearea.core.api.v1.dto.request.LoginRequest;
+import net.hidearea.core.api.v1.dto.response.AuthResponse;
 
 public interface AuthService {
     // v1 用メソッド
     AuthResponse login(LoginRequest request);
 
     // v2 用メソッド（将来追加）
-    AuthResponse loginV2(com.hidearea.core.api.v2.dto.request.LoginRequest request);
+    AuthResponse loginV2(net.hidearea.core.api.v2.dto.request.LoginRequest request);
 }
 ```
 
@@ -291,10 +291,10 @@ public interface AuthService {
 ```java
 package net.hidearea.core.service.impl;
 
-import com.hidearea.core.domain.entity.User;
-import com.hidearea.core.repository.UserRepository;
-import com.hidearea.core.security.JwtTokenProvider;
-import com.hidearea.core.service.AuthService;
+import net.hidearea.core.domain.entity.User;
+import net.hidearea.core.repository.UserRepository;
+import net.hidearea.core.security.JwtTokenProvider;
+import net.hidearea.core.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -338,8 +338,8 @@ DTO間の変換や、エンティティとDTOの変換にMapperパターンを�
 ```java
 package net.hidearea.core.api.v1.mapper;
 
-import com.hidearea.core.domain.entity.User;
-import com.hidearea.core.api.v1.dto.response.UserResponse;
+import net.hidearea.core.domain.entity.User;
+import net.hidearea.core.api.v1.dto.response.UserResponse;
 
 public class UserMapper {
 
@@ -359,8 +359,8 @@ public class UserMapper {
 ```java
 package net.hidearea.core.api.v2.mapper;
 
-import com.hidearea.core.domain.entity.User;
-import com.hidearea.core.api.v2.dto.response.UserResponse;
+import net.hidearea.core.domain.entity.User;
+import net.hidearea.core.api.v2.dto.response.UserResponse;
 
 public class UserMapper {
 
@@ -698,7 +698,7 @@ export interface UserResponse {
 
 | 要素 | 規約 | 例 |
 |-----|------|-----|
-| パッケージ | 小文字、単語区切りなし | `com.hidearea.core.api.v1` |
+| パッケージ | 小文字、単語区切りなし | `net.hidearea.core.api.v1` |
 | クラス | PascalCase | `UserController` |
 | メソッド | camelCase | `findUserById()` |
 | 定数 | UPPER_SNAKE_CASE | `MAX_LOGIN_ATTEMPTS` |
