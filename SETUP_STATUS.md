@@ -1,10 +1,12 @@
 # セットアップ状況
 
-**最終更新**: 2025-11-05
+**最終更新**: 2025-11-06
 
 ## 完了したタスク
 
-### Phase 1: プロジェクト基盤 - 進行中
+### Phase 1: プロジェクト基盤 - 完了 ✅
+
+### Phase 2: データベース設定 - 完了 ✅
 
 #### 1.1 バックエンド基盤 ✅
 
@@ -91,6 +93,40 @@
   - [x] scripts/stop-dev.sh（開発環境停止）
   - [x] scripts/clean.sh（クリーンアップ）
 
+#### 2.1 Flywayマイグレーション設定 ✅
+
+- [x] Flyway依存関係追加
+  - [x] build.gradle.ktsに設定済み
+  - [x] application.ymlでFlyway設定済み
+
+- [x] マイグレーションファイル作成
+  - [x] V1__init_schema.sql作成
+    - [x] usersテーブル作成
+    - [x] profilesテーブル作成
+    - [x] user_profiles中間テーブル作成
+    - [x] profile_profile_relations中間テーブル作成
+    - [x] インデックス作成
+    - [x] 外部キー制約設定
+    - [x] コメント追加
+
+#### 2.2 ビルドと起動確認 ✅
+
+- [x] バックエンドビルド成功
+  - [x] Java 21 LTS使用
+  - [x] Gradle clean build実行
+  - [x] JAR生成成功
+
+- [x] アプリケーション起動成功
+  - [x] testプロファイルでH2データベース使用
+  - [x] ポート9090でTomcat起動
+  - [x] Hibernateでテーブル自動生成確認
+  - [x] Spring Security設定確認
+
+- [x] APIエンドポイントテスト成功
+  - [x] /v3/api-docs エンドポイント応答確認
+  - [x] /api/v1/health エンドポイントテスト成功
+  - [x] OpenAPI仕様取得成功
+
 ## 次のステップ
 
 ### 必要な環境構築
@@ -130,12 +166,12 @@ npm install
 ./scripts/start-dev.sh
 ```
 
-### Phase 2への移行
+### Phase 3への移行
 
-Phase 1が完了したら、次は**Phase 2: データベース設定**に進みます:
-1. Flywayマイグレーションスクリプト作成
-2. データベーススキーマ構築
-3. テーブル作成（users, profiles, user_profiles, profile_profile_relations）
+Phase 1とPhase 2が完了しました。次は**Phase 3: ドメイン層**に進みます:
+1. Enum定義（UserRole, ProfileType, RoleInProfile）
+2. エンティティ実装（User, Profile, UserProfile, ProfileProfileRelation）
+3. JPA Auditing有効化
 
 ## ディレクトリ構造
 
