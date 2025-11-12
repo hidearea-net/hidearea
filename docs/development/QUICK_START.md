@@ -539,7 +539,7 @@ main（本番）
 
 ## 📊 現在の進捗状況
 
-**最終更新**: 2025-11-06
+**最終更新**: 2025-11-12
 
 ### 完了フェーズ
 
@@ -547,7 +547,8 @@ main（本番）
 |---------|------|--------|------|
 | **Phase 1: プロジェクト基盤** | ✅ 完了 | 2025-11-05 | Spring Boot + React + Docker設定完了 |
 | **Phase 2: データベース設定** | ✅ 完了 | 2025-11-06 | Flyway設定、ビルド・起動・APIテスト成功 |
-| **Phase 3: ドメイン層** | ⏳ 次のタスク | - | エンティティとEnum実装予定 |
+| **Phase 3: ドメイン層** | ✅ 完了 | 2025-11-12 | 全エンティティ・Enum実装、JPA Auditing有効化完了 |
+| **Phase 4: リポジトリ層** | ⏳ 次のタスク | - | データアクセス層実装予定 |
 
 ### 実装済み機能
 
@@ -559,6 +560,13 @@ main（本番）
 - ✅ Spring Boot基本設定（JPA, Security, Flyway）
 - ✅ API基盤（ヘルスチェックエンドポイント）
 - ✅ OpenAPI/Swagger設定
+- ✅ **ドメイン層実装完了**
+  - ✅ Enum定義（UserRole, ProfileType, RoleInProfile）
+  - ✅ User エンティティ（ユーザー認証アカウント）
+  - ✅ Profile エンティティ（プロフィール管理）
+  - ✅ UserProfile エンティティ（ユーザー・プロフィール関連）
+  - ✅ ProfileProfileRelation エンティティ（プロフィール階層管理）
+  - ✅ JPA Auditing有効化（自動タイムスタンプ管理）
 
 ### 動作確認済み
 
@@ -578,10 +586,12 @@ curl http://localhost:9090/api/v1/health
 
 ### 次の作業
 
-**Phase 3: ドメイン層の実装**
-1. Enum定義（UserRole, ProfileType, RoleInProfile）
-2. エンティティ実装（User, Profile, UserProfile, ProfileProfileRelation）
-3. JPA Auditing有効化
+**Phase 4: リポジトリ層の実装**
+1. UserRepository（ユーザーデータアクセス）
+2. ProfileRepository（プロフィールデータアクセス、再帰クエリ含む）
+3. UserProfileRepository（ユーザー・プロフィール関連）
+4. ProfileProfileRelationRepository（プロフィール階層管理）
+5. カスタムクエリ実装（階層取得、深度計算など）
 
 詳細は [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) を参照してください。
 
@@ -593,7 +603,8 @@ curl http://localhost:9090/api/v1/health
 2. 📖 [ARCHITECTURE.md](../architecture/ARCHITECTURE.md) を熟読する
 3. ✅ [ENVIRONMENT_SETUP.md](./ENVIRONMENT_SETUP.md) で環境構築
 4. ✅ [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) を確認
-5. 💻 Phase 3の実装開始！
+5. ✅ Phase 3完了！
+6. 💻 Phase 4の実装開始！
 
 ---
 
