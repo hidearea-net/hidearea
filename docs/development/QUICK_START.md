@@ -174,17 +174,32 @@ cp .env.example .env
 # .envファイルを編集して必要な値を設定
 ```
 
-#### ステップ3: Docker Composeで起動
+#### ステップ3: バックエンドの起動
 
+**開発環境（テストプロファイル - H2データベース使用）**:
 ```bash
-# データベースを起動
+cd backend
+
+# Java 21 LTSを使用
+export JAVA_HOME=~/.sdkman/candidates/java/21-tem
+export PATH=$JAVA_HOME/bin:$PATH
+
+# testプロファイルで起動（H2メモリデータベース）
+./gradlew bootRun --args='--spring.profiles.active=test --server.port=9090'
+```
+
+**本番環境（PostgreSQL使用）**:
+```bash
+# PostgreSQLを起動
 docker compose up -d postgres
 
-# バックエンドを起動（ローカル）
+# devプロファイルで起動
 cd backend
-./gradlew bootRun
+./gradlew bootRun --args='--spring.profiles.active=dev'
+```
 
-# フロントエンドを起動（別ターミナル）
+**フロントエンドの起動（別ターミナル）**:
+```bash
 cd frontend
 npm install
 npm run dev
@@ -192,9 +207,21 @@ npm run dev
 
 #### ステップ4: 動作確認
 
-- フロントエンド: http://localhost:5173
-- バックエンドAPI: http://localhost:8080
-- Swagger UI: http://localhost:8080/swagger-ui.html
+現在の状況（Phase 2完了時点）:
+- ✅ バックエンドAPI: http://localhost:9090
+- ✅ Health Check: http://localhost:9090/api/v1/health
+- ✅ OpenAPI仕様: http://localhost:9090/v3/api-docs
+- ⏳ Swagger UI: http://localhost:9090/swagger-ui.html（実装予定）
+- ⏳ フロントエンド: http://localhost:5173（Phase 8で実装予定）
+
+**動作確認コマンド**:
+```bash
+# ヘルスチェック
+curl http://localhost:9090/api/v1/health
+
+# OpenAPI仕様確認
+curl http://localhost:9090/v3/api-docs | jq
+```
 
 ---
 
@@ -219,30 +246,39 @@ graph TD
 
 ### 4.2 フェーズ別実装ガイド
 
-#### フェーズ1: プロジェクト基盤（1日）
+#### フェーズ1: プロジェクト基盤（1日）✅ **完了**
 
 **目標**: プロジェクト構造を作成し、ビルドできる状態にする
 
 **タスク**:
-- [ ] Spring Bootプロジェクト初期化（Gradle）
-- [ ] Reactプロジェクト初期化（Vite）
-- [ ] Docker Compose設定
-- [ ] 依存関係の追加
-- [ ] パッケージ構造の作成
+- [x] Spring Bootプロジェクト初期化（Gradle）
+- [x] Reactプロジェクト初期化（Vite）
+- [x] Docker Compose設定
+- [x] 依存関係の追加
+- [x] パッケージ構造の作成
 
 **参考ドキュメント**: PACKAGE_DESIGN.md
 
-#### フェーズ2: データベース（1日）
+**完了日**: 2025-11-05
+
+#### フェーズ2: データベース（1日）✅ **完了**
 
 **目標**: データベーススキーマを構築し、マイグレーションを実行
 
 **タスク**:
-- [ ] Flyway設定
-- [ ] V1__init_schema.sql作成
-- [ ] V2__add_sample_data.sql作成
-- [ ] マイグレーション実行確認
+- [x] Flyway設定
+- [x] V1__init_schema.sql作成
+- [x] ビルド・起動・APIテスト成功
+  - Java 21 LTS使用
+  - testプロファイルでH2データベース動作確認
+  - `/api/v1/health` エンドポイントテスト成功
+  - OpenAPI仕様（`/v3/api-docs`）取得成功
 
 **参考ドキュメント**: DATA_DESIGN.md
+
+**完了日**: 2025-11-06
+
+**📝 注意**: V2__add_sample_data.sqlは必要に応じて後で追加します
 
 #### フェーズ3: ドメイン層（2日）
 
@@ -501,13 +537,63 @@ main（本番）
 
 ---
 
+## 📊 現在の進捗状況
+
+**最終更新**: 2025-11-06
+
+### 完了フェーズ
+
+| フェーズ | 状態 | 完了日 | 備考 |
+|---------|------|--------|------|
+| **Phase 1: プロジェクト基盤** | ✅ 完了 | 2025-11-05 | Spring Boot + React + Docker設定完了 |
+| **Phase 2: データベース設定** | ✅ 完了 | 2025-11-06 | Flyway設定、ビルド・起動・APIテスト成功 |
+| **Phase 3: ドメイン層** | ⏳ 次のタスク | - | エンティティとEnum実装予定 |
+
+### 実装済み機能
+
+- ✅ プロジェクト構造（バックエンド・フロントエンド）
+- ✅ Gradle Kotlin DSL設定（Java 21 LTS）
+- ✅ Docker Compose設定（PostgreSQL, Backend, Frontend）
+- ✅ Flywayマイグレーション設定
+- ✅ データベーススキーマ設計（users, profiles, user_profiles, profile_profile_relations）
+- ✅ Spring Boot基本設定（JPA, Security, Flyway）
+- ✅ API基盤（ヘルスチェックエンドポイント）
+- ✅ OpenAPI/Swagger設定
+
+### 動作確認済み
+
+```bash
+# ビルド
+./gradlew clean build -x test
+# ✅ BUILD SUCCESSFUL
+
+# 起動
+./gradlew bootRun --args='--spring.profiles.active=test --server.port=9090'
+# ✅ アプリケーション起動成功
+
+# APIテスト
+curl http://localhost:9090/api/v1/health
+# ✅ レスポンス: {"application":"HideArea Backend","status":"UP",...}
+```
+
+### 次の作業
+
+**Phase 3: ドメイン層の実装**
+1. Enum定義（UserRole, ProfileType, RoleInProfile）
+2. エンティティ実装（User, Profile, UserProfile, ProfileProfileRelation）
+3. JPA Auditing有効化
+
+詳細は [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) を参照してください。
+
+---
+
 ## 次のステップ
 
 1. ✅ このドキュメント（QUICK_START.md）を読む
 2. 📖 [ARCHITECTURE.md](../architecture/ARCHITECTURE.md) を熟読する
-3. ⚙️ [ENVIRONMENT_SETUP.md](./ENVIRONMENT_SETUP.md) で環境構築
+3. ✅ [ENVIRONMENT_SETUP.md](./ENVIRONMENT_SETUP.md) で環境構築
 4. ✅ [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) を確認
-5. 💻 実装開始！
+5. 💻 Phase 3の実装開始！
 
 ---
 
