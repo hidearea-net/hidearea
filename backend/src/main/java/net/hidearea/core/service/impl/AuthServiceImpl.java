@@ -90,7 +90,7 @@ public class AuthServiceImpl implements AuthService {
         log.info("User logged in successfully: userId={}", user.getId());
 
         // JWT生成（Phase 6で実装予定）
-        String token = "DUMMY_TOKEN_PHASE6"; // TODO: Replace with actual JWT
+        String token = "DUMMY_TOKEN_PH4ASE6"; // TODO: Replace with actual JWT
 
         // レスポンス作成
         UserDto userDto = userMapper.toDto(user);
