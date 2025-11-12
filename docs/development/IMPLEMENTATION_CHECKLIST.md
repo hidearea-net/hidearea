@@ -44,9 +44,9 @@
 | **Phase 2** | データベース設定 | 1日 | [x] 完了 |
 | **Phase 3** | ドメイン層 | 2日 | [x] 完了 |
 | **Phase 4** | リポジトリ層 | 2日 | [x] 完了 |
-| **Phase 5** | サービス層 | 3日 | [ ] 次のタスク |
-| **Phase 6** | セキュリティ層 | 2日 | [ ] |
-| **Phase 7** | API層（バックエンド） | 3日 | [ ] |
+| **Phase 5** | サービス層 | 3日 | [x] 完了 |
+| **Phase 6** | セキュリティ層 | 2日 | [x] 完了 |
+| **Phase 7** | API層（バックエンド） | 3日 | [ ] 次のタスク |
 | **Phase 8** | フロントエンド | 5日 | [ ] |
 | **Phase 9** | テスト | 3日 | [ ] |
 | **Phase 10** | ドキュメント・デプロイ | 2日 | [ ] |
@@ -287,177 +287,180 @@
 #### 5.1 例外クラス作成
 
 - [x] **カスタム例外定義**
-  - [ ] `net.hidearea.core.exception.BusinessException` - ビジネスロジック例外
-  - [ ] `net.hidearea.core.exception.ResourceNotFoundException` - リソース未検出
-  - [ ] `net.hidearea.core.exception.UnauthorizedException` - 認証失敗
-  - [ ] `net.hidearea.core.exception.ErrorCode` - エラーコードEnum
+  - [x] `net.hidearea.core.exception.BusinessException` - ビジネスロジック例外
+  - [x] `net.hidearea.core.exception.ResourceNotFoundException` - リソース未検出
+  - [x] `net.hidearea.core.exception.UnauthorizedException` - 認証失敗
+  - [x] `net.hidearea.core.exception.ErrorCode` - エラーコードEnum
 
-- [ ] **グローバル例外ハンドラー**
-  - [ ] `@RestControllerAdvice` でグローバルハンドラー作成
-  - [ ] 各例外をHTTPステータスコードにマッピング
+- [x] **グローバル例外ハンドラー**
+  - [x] `@RestControllerAdvice` でグローバルハンドラー作成
+  - [x] 各例外をHTTPステータスコードにマッピング
 
 #### 5.2 AuthService実装
 
-- [ ] **AuthService インターフェース**
-  - [ ] `net.hidearea.core.service.AuthService` 作成
-  - [ ] メソッド定義:
-    - [ ] `AuthResponse login(LoginRequest request)` - ログイン
-    - [ ] `AuthResponse register(RegisterRequest request)` - ユーザー登録
-    - [ ] `void logout(String token)` - ログアウト（将来対応）
+- [x] **AuthService インターフェース**
+  - [x] `net.hidearea.core.service.AuthService` 作成
+  - [x] メソッド定義:
+    - [x] `AuthResponse login(LoginRequest request)` - ログイン
+    - [x] `AuthResponse register(RegisterRequest request)` - ユーザー登録
+    - [x] `void logout(String token)` - ログアウト（将来対応）
 
-- [ ] **AuthServiceImpl 実装クラス**
-  - [ ] `net.hidearea.core.service.impl.AuthServiceImpl` 作成
-  - [ ] `@Service`, `@Transactional` アノテーション設定
-  - [ ] ログイン処理:
-    - [ ] ユーザー名/メールで検索
-    - [ ] パスワード検証（BCrypt）
-    - [ ] JWT生成
-  - [ ] ユーザー登録処理:
-    - [ ] 重複チェック（username, email）
-    - [ ] パスワードハッシュ化（BCrypt）
-    - [ ] User エンティティ作成・保存
-    - [ ] JWT生成
+- [x] **AuthServiceImpl 実装クラス**
+  - [x] `net.hidearea.core.service.impl.AuthServiceImpl` 作成
+  - [x] `@Service`, `@Transactional` アノテーション設定
+  - [x] ログイン処理:
+    - [x] ユーザー名/メールで検索
+    - [x] パスワード検証（BCrypt）
+    - [x] JWT生成
+  - [x] ユーザー登録処理:
+    - [x] 重複チェック（username, email）
+    - [x] パスワードハッシュ化（BCrypt）
+    - [x] User エンティティ作成・保存
+    - [x] JWT生成
 
 **参考**: [ARCHITECTURE.md](../architecture/ARCHITECTURE.md) - 6. データフロー
 
 #### 5.3 UserService実装
 
-- [ ] **UserService インターフェース**
-  - [ ] `net.hidearea.core.service.UserService` 作成
-  - [ ] メソッド定義:
-    - [ ] `UserDto getUserById(Long id)` - ユーザー取得
-    - [ ] `UserDto getUserByUsername(String username)` - ユーザー取得
-    - [ ] `UserDto updateUser(Long id, UpdateUserRequest request)` - 更新
-    - [ ] `void deleteUser(Long id)` - 削除
-    - [ ] `void changePassword(Long id, ChangePasswordRequest request)` - パスワード変更
+- [x] **UserService インターフェース**
+  - [x] `net.hidearea.core.service.UserService` 作成
+  - [x] メソッド定義:
+    - [x] `UserDto getUserById(Long id)` - ユーザー取得
+    - [x] `UserDto getUserByUsername(String username)` - ユーザー取得
+    - [x] `UserDto updateUser(Long id, UpdateUserRequest request)` - 更新
+    - [x] `void deleteUser(Long id)` - 削除
+    - [x] `void changePassword(Long id, ChangePasswordRequest request)` - パスワード変更
 
-- [ ] **UserServiceImpl 実装クラス**
-  - [ ] `net.hidearea.core.service.impl.UserServiceImpl` 作成
-  - [ ] `@Service`, `@Transactional` アノテーション設定
-  - [ ] 各メソッド実装
-  - [ ] 権限チェック（自分自身またはADMINのみ）
+- [x] **UserServiceImpl 実装クラス**
+  - [x] `net.hidearea.core.service.impl.UserServiceImpl` 作成
+  - [x] `@Service`, `@Transactional` アノテーション設定
+  - [x] 各メソッド実装
+  - [x] 権限チェック（自分自身またはADMINのみ）
 
 #### 5.4 ProfileService実装
 
-- [ ] **ProfileService インターフェース**
-  - [ ] `net.hidearea.core.service.ProfileService` 作成
-  - [ ] メソッド定義:
-    - [ ] `ProfileDto createProfile(CreateProfileRequest request, String username)` - 作成
-    - [ ] `ProfileDto createChildProfile(Long parentId, CreateProfileRequest request, String username)` - 子プロフィール作成
-    - [ ] `ProfileDto getProfileById(Long id)` - 取得
-    - [ ] `List<ProfileDto> getProfilesByUser(String username)` - ユーザーのプロフィール一覧
-    - [ ] `ProfileTreeDto getProfileTree(Long id)` - 階層構造取得
-    - [ ] `ProfileDto updateProfile(Long id, UpdateProfileRequest request, String username)` - 更新
-    - [ ] `void deleteProfile(Long id, String username)` - 削除
-    - [ ] `void addMember(Long profileId, AddMemberRequest request, String username)` - メンバー追加
-    - [ ] `void removeMember(Long profileId, Long userId, String username)` - メンバー削除
+- [x] **ProfileService インターフェース**
+  - [x] `net.hidearea.core.service.ProfileService` 作成
+  - [x] メソッド定義:
+    - [x] `ProfileDto createProfile(CreateProfileRequest request, String username)` - 作成
+    - [x] `ProfileDto createChildProfile(Long parentId, CreateProfileRequest request, String username)` - 子プロフィール作成
+    - [x] `ProfileDto getProfileById(Long id)` - 取得
+    - [x] `List<ProfileDto> getProfilesByUser(String username)` - ユーザーのプロフィール一覧
+    - [x] `ProfileTreeDto getProfileTree(Long id)` - 階層構造取得
+    - [x] `ProfileDto updateProfile(Long id, UpdateProfileRequest request, String username)` - 更新
+    - [x] `void deleteProfile(Long id, String username)` - 削除
+    - [x] `void addMember(Long profileId, AddMemberRequest request, String username)` - メンバー追加
+    - [x] `void removeMember(Long profileId, Long userId, String username)` - メンバー削除
 
-- [ ] **ProfileServiceImpl 実装クラス**
-  - [ ] `net.hidearea.core.service.impl.ProfileServiceImpl` 作成
-  - [ ] `@Service`, `@Transactional` アノテーション設定
-  - [ ] プロフィール作成処理:
-    - [ ] Profile エンティティ作成
-    - [ ] UserProfile 作成（OWNER）
-  - [ ] 子プロフィール作成処理:
-    - [ ] 権限チェック（親プロフィールのOWNER）
-    - [ ] 階層深度チェック
-    - [ ] Profile エンティティ作成
-    - [ ] ProfileProfileRelation 作成
-    - [ ] UserProfile 作成（OWNER）
-  - [ ] 階層構造取得処理:
-    - [ ] 再帰的にツリー構築
-  - [ ] 更新・削除処理:
-    - [ ] 権限チェック（OWNER）
-  - [ ] メンバー追加・削除処理:
-    - [ ] 権限チェック（OWNER）
+- [x] **ProfileServiceImpl 実装クラス**
+  - [x] `net.hidearea.core.service.impl.ProfileServiceImpl` 作成
+  - [x] `@Service`, `@Transactional` アノテーション設定
+  - [x] プロフィール作成処理:
+    - [x] Profile エンティティ作成
+    - [x] UserProfile 作成（OWNER）
+  - [x] 子プロフィール作成処理:
+    - [x] 権限チェック（親プロフィールのOWNER）
+    - [x] 階層深度チェック
+    - [x] Profile エンティティ作成
+    - [x] ProfileProfileRelation 作成
+    - [x] UserProfile 作成（OWNER）
+  - [x] 階層構造取得処理:
+    - [x] 再帰的にツリー構築
+  - [x] 更新・削除処理:
+    - [x] 権限チェック（OWNER）
+  - [x] メンバー追加・削除処理:
+    - [x] 権限チェック（OWNER）
 
 **参考**: [DATA_DESIGN.md](../architecture/DATA_DESIGN.md) - 6. ユースケース例
 
 #### 5.5 DTOとMapperの実装
 
-- [ ] **DTO作成（Request）**
-  - [ ] `LoginRequest`, `RegisterRequest`, `ChangePasswordRequest`
-  - [ ] `CreateProfileRequest`, `UpdateProfileRequest`, `AddMemberRequest`
-  - [ ] バリデーションアノテーション（`@NotBlank`, `@Email`, etc.）
+- [x] **DTO作成（Request）**
+  - [x] `LoginRequest`, `RegisterRequest`, `ChangePasswordRequest`
+  - [x] `CreateProfileRequest`, `UpdateProfileRequest`, `AddMemberRequest`
+  - [x] バリデーションアノテーション（`@NotBlank`, `@Email`, etc.）
 
-- [ ] **DTO作成（Response）**
-  - [ ] `AuthResponse`, `UserDto`, `ProfileDto`, `ProfileTreeDto`
-  - [ ] Lombok: `@Data`, `@Builder`
+- [x] **DTO作成（Response）**
+  - [x] `AuthResponse`, `UserDto`, `ProfileDto`, `ProfileTreeDto`
+  - [x] Lombok: `@Data`, `@Builder`
 
-- [ ] **Mapper作成**
-  - [ ] `UserMapper` - Entity ↔ DTO 変換
-  - [ ] `ProfileMapper` - Entity ↔ DTO 変換
-  - [ ] MapStruct または手動実装
+- [x] **Mapper作成**
+  - [x] `UserMapper` - Entity ↔ DTO 変換
+  - [x] `ProfileMapper` - Entity ↔ DTO 変換
+  - [x] MapStruct または手動実装
 
 ---
 
-### Phase 6: セキュリティ層（2日）
+### Phase 6: セキュリティ層（2日） ✅ **完了 (2025-11-13)**
 
 **目標**: JWT認証とSpring Securityを実装
 
 #### 6.1 JWT実装
 
-- [ ] **JWT依存関係追加**
-  - [ ] `build.gradle.kts` に`jjwt` ライブラリ追加
-    ```kotlin
+- [x] **JWT依存関係追加**
+  - [x] `build.gradle` に`jjwt` ライブラリ追加
+    ```groovy
     implementation("io.jsonwebtoken:jjwt-api:0.12.3")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.3")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.3")
     ```
 
-- [ ] **JwtTokenProvider 実装**
-  - [ ] `net.hidearea.core.security.JwtTokenProvider` 作成
-  - [ ] メソッド実装:
-    - [ ] `generateToken(User user)` - JWT生成
-    - [ ] `getUsernameFromToken(String token)` - ユーザー名取得
-    - [ ] `validateToken(String token)` - トークン検証
-    - [ ] `getExpirationTime()` - 有効期限取得
-  - [ ] JWT設定:
-    - [ ] 秘密鍵（環境変数から取得）
-    - [ ] 有効期限（24時間）
-    - [ ] ペイロード（userId, username, role）
+- [x] **JwtTokenProvider 実装**
+  - [x] `net.hidearea.core.infrastructure.security.JwtTokenProvider` 作成
+  - [x] メソッド実装:
+    - [x] `generateToken(User user)` - JWT生成
+    - [x] `getUsernameFromToken(String token)` - ユーザー名取得
+    - [x] `getUserIdFromToken(String token)` - ユーザーID取得
+    - [x] `getRoleFromToken(String token)` - ロール取得
+    - [x] `validateToken(String token)` - トークン検証
+    - [x] `getExpirationTime()` - 有効期限取得
+  - [x] JWT設定:
+    - [x] 秘密鍵（環境変数から取得）
+    - [x] 有効期限（24時間）
+    - [x] ペイロード（userId, username, role）
 
 **参考**: [ARCHITECTURE.md](../architecture/ARCHITECTURE.md) - 7.1 認証・認可の仕組み
 
 #### 6.2 Spring Security設定
 
-- [ ] **SecurityConfig 実装**
-  - [ ] `net.hidearea.core.config.SecurityConfig` 作成
-  - [ ] `@Configuration`, `@EnableWebSecurity` アノテーション
-  - [ ] SecurityFilterChain Bean定義:
-    - [ ] CSRF無効化（JWT使用のため）
-    - [ ] CORS設定
-    - [ ] 認証不要エンドポイント: `/api/v1/auth/**`, `/swagger-ui/**`, `/v3/api-docs/**`
-    - [ ] その他エンドポイント: 認証必要
-    - [ ] ステートレスセッション管理
-  - [ ] PasswordEncoder Bean定義（BCrypt、強度10）
+- [x] **SecurityConfig 実装**
+  - [x] `net.hidearea.core.config.SecurityConfig` 更新
+  - [x] `@Configuration`, `@EnableWebSecurity`, `@EnableMethodSecurity` アノテーション
+  - [x] SecurityFilterChain Bean定義:
+    - [x] CSRF無効化（JWT使用のため）
+    - [x] CORS設定（すべてのオリジン許可、開発環境用）
+    - [x] 認証不要エンドポイント: `/api/v1/auth/**`, `/api/v1/health`, `/swagger-ui/**`, `/v3/api-docs/**`
+    - [x] その他エンドポイント: 認証必要
+    - [x] ステートレスセッション管理
+  - [x] PasswordEncoder Bean定義（BCrypt、強度10）
+  - [x] AuthenticationManager Bean定義
 
-- [ ] **JwtAuthenticationFilter 実装**
-  - [ ] `net.hidearea.core.security.JwtAuthenticationFilter` 作成
-  - [ ] `OncePerRequestFilter` を継承
-  - [ ] フィルター処理:
-    - [ ] `Authorization` ヘッダーからJWT取得
-    - [ ] JWT検証
-    - [ ] SecurityContextにAuthenticationを設定
-  - [ ] SecurityFilterChainに登録（UsernamePasswordAuthenticationFilter の前）
+- [x] **JwtAuthenticationFilter 実装**
+  - [x] `net.hidearea.core.infrastructure.security.JwtAuthenticationFilter` 作成
+  - [x] `OncePerRequestFilter` を継承
+  - [x] フィルター処理:
+    - [x] `Authorization` ヘッダーからJWT取得
+    - [x] JWT検証
+    - [x] SecurityContextにAuthenticationを設定
+  - [x] SecurityFilterChainに登録（UsernamePasswordAuthenticationFilter の前）
 
-- [ ] **UserDetailsServiceImpl 実装**
-  - [ ] `net.hidearea.core.security.UserDetailsServiceImpl` 作成
-  - [ ] `UserDetailsService` を実装
-  - [ ] `loadUserByUsername(String username)` 実装:
-    - [ ] UserRepository でユーザー検索
-    - [ ] `UserDetails` オブジェクト生成
+- [x] **UserDetailsServiceImpl 実装**
+  - [x] `net.hidearea.core.infrastructure.security.UserDetailsServiceImpl` 作成
+  - [x] `UserDetailsService` を実装
+  - [x] `loadUserByUsername(String username)` 実装:
+    - [x] UserRepository でユーザー検索
+    - [x] `UserDetails` オブジェクト生成
 
 **参考**: [ARCHITECTURE.md](../architecture/ARCHITECTURE.md) - 7. セキュリティアーキテクチャ
 
 #### 6.3 セキュリティテスト
 
-- [ ] **JwtTokenProviderTest 作成**
+- [ ] **JwtTokenProviderTest 作成** (Phase 9で実装予定)
   - [ ] トークン生成テスト
   - [ ] トークン検証テスト
   - [ ] 有効期限切れテスト
 
-- [ ] **SecurityConfigTest 作成**
+- [ ] **SecurityConfigTest 作成** (Phase 9で実装予定)
   - [ ] 認証不要エンドポイントのテスト
   - [ ] 認証必要エンドポイントのテスト（401エラー確認）
 
@@ -827,28 +830,29 @@
 | Phase 2: データベース設定 | 100% | ✅ 完了 (2025-11-06) |
 | Phase 3: ドメイン層 | 100% | ✅ 完了 (2025-11-12) |
 | Phase 4: リポジトリ層 | 100% | ✅ 完了 (2025-11-12) |
-| Phase 5: サービス層 | 0% | ⏳ 次のタスク |
-| Phase 6: セキュリティ層 | 0% | 未着手 |
-| Phase 7: API層（バックエンド） | 0% | 未着手 |
+| Phase 5: サービス層 | 100% | ✅ 完了 (2025-11-12) |
+| Phase 6: セキュリティ層 | 100% | ✅ 完了 (2025-11-13) |
+| Phase 7: API層（バックエンド） | 0% | ⏳ 次のタスク |
 | Phase 8: フロントエンド | 0% | 未着手 |
 | Phase 9: テスト | 0% | 未着手 |
 | Phase 10: ドキュメント・デプロイ | 0% | 未着手 |
 
-**全体進捗**: 40% (4/10フェーズ完了)
+**全体進捗**: 60% (6/10フェーズ完了)
 
 ### 4.2 マイルストーン
 
 - [x] **マイルストーン1（Week 1）**: Phase 1-3完了（プロジェクト基盤、DB、ドメイン層） ✅ 完了
-- [x] **マイルストーン2（Week 2）**: Phase 4-5完了（リポジトリ層、サービス層） 🔄 進行中 (Phase 4完了、Phase 5は次のタスク)
-- [ ] **マイルストーン3（Week 3）**: Phase 6-7完了（セキュリティ層、API層）
-- [ ] **マイルストーン4（Week 4）**: Phase 8-9完了（フロントエンド、テスト）
-- [ ] **マイルストーン5（Week 5）**: Phase 10完了、MVP完成
+- [x] **マイルストーン2（Week 2）**: Phase 4-5完了（リポジトリ層、サービス層） ✅ 完了
+- [x] **マイルストーン3（Week 3）**: Phase 6完了（セキュリティ層） ✅ 完了
+- [ ] **マイルストーン4（Week 4）**: Phase 7完了（API層）⏳ 次のタスク
+- [ ] **マイルストーン5（Week 5）**: Phase 8-9完了（フロントエンド、テスト）
+- [ ] **マイルストーン6（Week 6）**: Phase 10完了、MVP完成
 
 ### 4.3 今週のタスク
 
-**Week 2（現在）**:
-- [x] Phase 4: リポジトリ層 ✅ 完了
-- [ ] Phase 5: サービス層 ⏳ 次のタスク
+**Week 3（現在）**:
+- [x] Phase 6: セキュリティ層 ✅ 完了
+- [ ] Phase 7: API層 ⏳ 次のタスク
 
 ### 4.4 ブロッカー（障害）
 
