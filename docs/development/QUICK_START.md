@@ -180,10 +180,7 @@ cp .env.example .env
 ```bash
 cd backend
 
-# Java 21 LTSを使用
-export JAVA_HOME=~/.sdkman/candidates/java/21-tem
-export PATH=$JAVA_HOME/bin:$PATH
-
+# Java 25 LTSを使用
 # testプロファイルで起動（H2メモリデータベース）
 ./gradlew bootRun --args='--spring.profiles.active=test --server.port=9090'
 ```
@@ -269,7 +266,7 @@ graph TD
 - [x] Flyway設定
 - [x] V1__init_schema.sql作成
 - [x] ビルド・起動・APIテスト成功
-  - Java 21 LTS使用
+  - Java 25 LTS使用
   - testプロファイルでH2データベース動作確認
   - `/api/v1/health` エンドポイントテスト成功
   - OpenAPI仕様（`/v3/api-docs`）取得成功
@@ -548,12 +545,13 @@ main（本番）
 | **Phase 1: プロジェクト基盤** | ✅ 完了 | 2025-11-05 | Spring Boot + React + Docker設定完了 |
 | **Phase 2: データベース設定** | ✅ 完了 | 2025-11-06 | Flyway設定、ビルド・起動・APIテスト成功 |
 | **Phase 3: ドメイン層** | ✅ 完了 | 2025-11-12 | 全エンティティ・Enum実装、JPA Auditing有効化完了 |
-| **Phase 4: リポジトリ層** | ⏳ 次のタスク | - | データアクセス層実装予定 |
+| **Phase 4: リポジトリ層** | ✅ 完了 | 2025-11-12 | 全リポジトリ実装、カスタムクエリ・再帰クエリ実装完了 |
+| **Phase 5: サービス層** | ⏳ 次のタスク | - | ビジネスロジック実装予定 |
 
 ### 実装済み機能
 
 - ✅ プロジェクト構造（バックエンド・フロントエンド）
-- ✅ Gradle Kotlin DSL設定（Java 21 LTS）
+- ✅ Gradle Kotlin DSL設定（Java 25 LTS）
 - ✅ Docker Compose設定（PostgreSQL, Backend, Frontend）
 - ✅ Flywayマイグレーション設定
 - ✅ データベーススキーマ設計（users, profiles, user_profiles, profile_profile_relations）
@@ -567,6 +565,12 @@ main（本番）
   - ✅ UserProfile エンティティ（ユーザー・プロフィール関連）
   - ✅ ProfileProfileRelation エンティティ（プロフィール階層管理）
   - ✅ JPA Auditing有効化（自動タイムスタンプ管理）
+- ✅ **リポジトリ層実装完了**
+  - ✅ UserRepository（ユーザー検索、有効アカウント検索）
+  - ✅ ProfileRepository（プロフィール検索、階層クエリ）
+  - ✅ UserProfileRepository（ユーザー・プロフィール関連管理）
+  - ✅ ProfileProfileRelationRepository（プロフィール階層管理）
+  - ✅ カスタムクエリ実装（再帰クエリによる階層取得、深度計算）
 
 ### 動作確認済み
 
@@ -586,12 +590,12 @@ curl http://localhost:9090/api/v1/health
 
 ### 次の作業
 
-**Phase 4: リポジトリ層の実装**
-1. UserRepository（ユーザーデータアクセス）
-2. ProfileRepository（プロフィールデータアクセス、再帰クエリ含む）
-3. UserProfileRepository（ユーザー・プロフィール関連）
-4. ProfileProfileRelationRepository（プロフィール階層管理）
-5. カスタムクエリ実装（階層取得、深度計算など）
+**Phase 5: サービス層の実装**
+1. AuthService（認証・認可処理）
+2. UserService（ユーザー管理ビジネスロジック）
+3. ProfileService（プロフィール管理ビジネスロジック）
+4. トランザクション管理
+5. 例外ハンドリング
 
 詳細は [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) を参照してください。
 
@@ -604,7 +608,8 @@ curl http://localhost:9090/api/v1/health
 3. ✅ [ENVIRONMENT_SETUP.md](./ENVIRONMENT_SETUP.md) で環境構築
 4. ✅ [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) を確認
 5. ✅ Phase 3完了！
-6. 💻 Phase 4の実装開始！
+6. ✅ Phase 4完了！
+7. 💻 Phase 5の実装開始！
 
 ---
 
