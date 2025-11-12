@@ -55,159 +55,160 @@
 
 ## 3. 詳細タスクリスト
 
-### Phase 1: プロジェクト基盤（1日）
+### Phase 1: プロジェクト基盤（1日） ✅ **完了 (2025-11-05)**
 
 **目標**: プロジェクト構造を作成し、ビルドできる状態にする
 
 #### 1.1 バックエンド基盤
 
-- [ ] **Spring Bootプロジェクト初期化**
-  - [ ] Spring Initializr でプロジェクト作成
+- [x] **Spring Bootプロジェクト初期化**
+  - [x] Spring Initializr でプロジェクト作成
     - Group: `net.hidearea`
     - Artifact: `hidearea-backend`
-    - Java: 25
+    - Java: 21 LTS (実際の設定: Java 25だがJava 21で動作確認済み)
     - Dependencies: Spring Web, Spring Data JPA, PostgreSQL Driver, Spring Security, Lombok
-  - [ ] Gradle Kotlin DSL設定
-  - [ ] `./gradlew build` で正常にビルドできることを確認
+  - [x] Gradle設定 (build.gradle使用)
+  - [x] `./gradlew build` で正常にビルドできることを確認
 
-- [ ] **パッケージ構造作成**
-  - [ ] `net.hidearea.core.domain.entity/` パッケージ作成
-  - [ ] `net.hidearea.core.repository/` パッケージ作成
-  - [ ] `net.hidearea.core.service/` パッケージ作成
-  - [ ] `net.hidearea.core.security/` パッケージ作成
-  - [ ] `net.hidearea.core.api.v1.controller/` パッケージ作成
-  - [ ] `net.hidearea.core.api.v1.dto/` パッケージ作成
-  - [ ] `net.hidearea.core.config/` パッケージ作成
-  - [ ] `net.hidearea.core.exception/` パッケージ作成
+- [x] **パッケージ構造作成**
+  - [x] `net.hidearea.core.domain.entity/` パッケージ作成
+  - [x] `net.hidearea.core.repository/` パッケージ作成
+  - [x] `net.hidearea.core.service/` パッケージ作成 (Phase 5で実装予定)
+  - [x] `net.hidearea.core.infrastructure.security/` パッケージ作成
+  - [x] `net.hidearea.core.presentation.api.v1.controller/` パッケージ作成
+  - [x] `net.hidearea.core.api.v1.dto/` パッケージ作成 (Phase 7で実装予定)
+  - [x] `net.hidearea.core.config/` パッケージ作成 (Phase 6で実装予定)
+  - [x] `net.hidearea.core.exception/` パッケージ作成 (Phase 5で実装予定)
 
-- [ ] **application.yml設定**
-  - [ ] データベース接続設定
-  - [ ] JPA/Hibernate設定
-  - [ ] ログ設定
-  - [ ] Spring Profilesの設定（dev, test, prod）
+- [x] **application.yml設定**
+  - [x] データベース接続設定 (PostgreSQL + H2)
+  - [x] JPA/Hibernate設定
+  - [x] ログ設定
+  - [x] Spring Profilesの設定（h2プロファイル作成済み）
 
 **参考**: [PACKAGE_DESIGN.md](../architecture/PACKAGE_DESIGN.md)
 
 #### 1.2 フロントエンド基盤
 
-- [ ] **Reactプロジェクト初期化**
-  - [ ] Viteでプロジェクト作成: `npm create vite@latest frontend -- --template react-ts`
-  - [ ] 依存関係インストール: `npm install`
-  - [ ] `npm run dev` で起動確認
+- [x] **Reactプロジェクト初期化**
+  - [x] Viteでプロジェクト作成: `npm create vite@latest frontend -- --template react-ts`
+  - [x] 依存関係インストール: `npm install`
+  - [x] `npm run dev` で起動確認
 
-- [ ] **必要なライブラリのインストール**
-  - [ ] Axios: `npm install axios`
-  - [ ] React Router: `npm install react-router-dom`
-  - [ ] 状態管理: `npm install zustand`（または React Context API使用）
-  - [ ] UIライブラリ: `npm install @mui/material @emotion/react @emotion/styled`（Material-UI）
+- [~] **必要なライブラリのインストール** (Phase 8で実装予定)
+  - [~] Axios: `npm install axios`
+  - [~] React Router: `npm install react-router-dom`
+  - [~] 状態管理: `npm install zustand`（または React Context API使用）
+  - [~] UIライブラリ: `npm install @mui/material @emotion/react @emotion/styled`（Material-UI）
 
-- [ ] **ディレクトリ構造作成**
-  - [ ] `src/components/` ディレクトリ作成
-  - [ ] `src/pages/` ディレクトリ作成
-  - [ ] `src/services/v1/` ディレクトリ作成
-  - [ ] `src/types/v1/` ディレクトリ作成
-  - [ ] `src/hooks/` ディレクトリ作成
-  - [ ] `src/utils/` ディレクトリ作成
+- [~] **ディレクトリ構造作成** (Phase 8で実装予定)
+  - [~] `src/components/` ディレクトリ作成
+  - [~] `src/pages/` ディレクトリ作成
+  - [~] `src/services/v1/` ディレクトリ作成
+  - [~] `src/types/v1/` ディレクトリ作成
+  - [~] `src/hooks/` ディレクトリ作成
+  - [~] `src/utils/` ディレクトリ作成
 
 **参考**: [PACKAGE_DESIGN.md](../architecture/PACKAGE_DESIGN.md) - 3. フロントエンド ディレクトリ構造
 
 #### 1.3 Docker設定
 
-- [ ] **Docker Compose設定**
-  - [ ] `docker-compose.yml` 作成
-    - [ ] PostgreSQL サービス定義
-    - [ ] 環境変数設定（.env）
-    - [ ] ボリューム設定（データ永続化）
-  - [ ] `.env.example` 作成
-  - [ ] `docker compose up -d postgres` でDB起動確認
+- [x] **Docker Compose設定**
+  - [x] `docker-compose.yml` 作成
+    - [x] PostgreSQL サービス定義
+    - [x] 環境変数設定（.env）
+    - [x] ボリューム設定（データ永続化）
+  - [x] `.env.example` 作成
+  - [x] `docker compose up -d postgres` でDB起動確認
 
 ---
 
-### Phase 2: データベース設定（1日）
+### Phase 2: データベース設定（1日） ✅ **完了 (2025-11-06)**
 
 **目標**: データベーススキーマを構築し、マイグレーションを実行
 
 #### 2.1 Flyway設定
 
-- [ ] **Flyway依存関係追加**
-  - [ ] `build.gradle.kts` にFlywayプラグイン追加
-  - [ ] `application.yml` でFlyway設定
+- [x] **Flyway依存関係追加**
+  - [x] `build.gradle` にFlyway依存関係追加
+  - [x] `application.yml` でFlyway設定
 
-- [ ] **マイグレーションファイル作成**
-  - [ ] `src/main/resources/db/migration/` ディレクトリ作成
-  - [ ] `V1__init_schema.sql` 作成
-    - [ ] `users` テーブル作成
-    - [ ] `profiles` テーブル作成
-    - [ ] `user_profiles` 中間テーブル作成
-    - [ ] `profile_profile_relations` 中間テーブル作成
-    - [ ] インデックス作成
-  - [ ] `V2__add_sample_data.sql` 作成（開発用サンプルデータ）
+- [x] **マイグレーションファイル作成**
+  - [x] `src/main/resources/db/migration/` ディレクトリ作成
+  - [x] `V1__init_schema.sql` 作成
+    - [x] `users` テーブル作成
+    - [x] `profiles` テーブル作成
+    - [x] `user_profiles` 中間テーブル作成
+    - [x] `profile_profile_relations` 中間テーブル作成
+    - [x] インデックス作成
+  - [~] `V2__add_sample_data.sql` 作成（必要に応じて後で追加）
 
-- [ ] **マイグレーション実行**
-  - [ ] `./gradlew flywayMigrate` で実行
-  - [ ] DBeaver/pgAdminでテーブル確認
+- [x] **マイグレーション実行**
+  - [x] Flywayマイグレーション自動実行（アプリケーション起動時）
+  - [x] H2データベースでテーブル確認済み
 
 **参考**: [DATA_DESIGN.md](../architecture/DATA_DESIGN.md) - 5. データベーススキーマ
 
 ---
 
-### Phase 3: ドメイン層（2日）
+### Phase 3: ドメイン層（2日） ✅ **完了 (2025-11-12)**
 
 **目標**: エンティティクラスとEnumを実装
 
 #### 3.1 Enum定義
 
-- [ ] **UserRole Enum**
-  - [ ] `net.hidearea.core.domain.entity.UserRole` 作成
-  - [ ] `USER`, `ADMIN` 定義
+- [x] **UserRole Enum**
+  - [x] `net.hidearea.core.domain.entity.UserRole` 作成
+  - [x] `USER`, `ADMIN` 定義
 
-- [ ] **ProfileType Enum**
-  - [ ] `net.hidearea.core.domain.entity.ProfileType` 作成
-  - [ ] `PERSONAL`, `BUSINESS` 定義
+- [x] **ProfileType Enum**
+  - [x] `net.hidearea.core.domain.entity.ProfileType` 作成
+  - [x] `PERSONAL`, `BUSINESS` 定義
 
-- [ ] **RoleInProfile Enum**
-  - [ ] `net.hidearea.core.domain.entity.RoleInProfile` 作成
-  - [ ] `OWNER`, `MEMBER` 定義
+- [x] **RoleInProfile Enum**
+  - [x] `net.hidearea.core.domain.entity.RoleInProfile` 作成
+  - [x] `OWNER`, `MEMBER` 定義
 
 **参考**: [DATA_DESIGN.md](../architecture/DATA_DESIGN.md) - 1. エンティティ設計
 
 #### 3.2 エンティティ実装
 
-- [ ] **User エンティティ**
-  - [ ] `net.hidearea.core.domain.entity.User` 作成
-  - [ ] フィールド定義: `id`, `username`, `email`, `passwordHash`, `role`, `enabled`, `createdAt`, `updatedAt`
-  - [ ] `@Entity`, `@Table`, `@Id`, `@GeneratedValue` アノテーション設定
-  - [ ] `@OneToMany` リレーション設定（UserProfile）
-  - [ ] Lombok: `@Data`, `@Builder`, `@NoArgsConstructor`, `@AllArgsConstructor`
-  - [ ] 監査機能: `@EntityListeners(AuditingEntityListener.class)`
+- [x] **User エンティティ**
+  - [x] `net.hidearea.core.domain.entity.User` 作成
+  - [x] フィールド定義: `id`, `username`, `passwordHash`, `role`, `enabled`, `createdAt`, `updatedAt`
+    - 📝 注: emailフィールドはProfileエンティティで管理（設計変更）
+  - [x] `@Entity`, `@Table`, `@Id`, `@GeneratedValue` アノテーション設定
+  - [x] `@OneToMany` リレーション設定（UserProfile）
+  - [x] Lombok: `@Data`, `@Builder`, `@NoArgsConstructor`, `@AllArgsConstructor`
+  - [x] 監査機能: `@EntityListeners(AuditingEntityListener.class)`
 
-- [ ] **Profile エンティティ**
-  - [ ] `net.hidearea.core.domain.entity.Profile` 作成
-  - [ ] フィールド定義: `id`, `email`, `profileName`, `displayName`, `bio`, `avatarUrl`, `profileType`, `isPublic`, `createdAt`, `updatedAt`
-  - [ ] `@OneToMany` リレーション設定（UserProfile, ProfileProfileRelation）
-  - [ ] Lombok設定
+- [x] **Profile エンティティ**
+  - [x] `net.hidearea.core.domain.entity.Profile` 作成
+  - [x] フィールド定義: `id`, `email`, `profileName`, `displayName`, `bio`, `avatarUrl`, `profileType`, `isPublic`, `createdAt`, `updatedAt`
+  - [x] `@OneToMany` リレーション設定（UserProfile, ProfileProfileRelation）
+  - [x] Lombok設定: `@Data`, `@Builder`, `@NoArgsConstructor`, `@AllArgsConstructor`
 
-- [ ] **UserProfile エンティティ**
-  - [ ] `net.hidearea.core.domain.entity.UserProfile` 作成
-  - [ ] フィールド定義: `id`, `user`, `profile`, `roleInProfile`, `joinedAt`
-  - [ ] `@ManyToOne` リレーション設定（User, Profile）
-  - [ ] 複合ユニーク制約: `@UniqueConstraint(columnNames = {"user_id", "profile_id"})`
-  - [ ] Lombok設定（`@Data`ではなく`@Getter`, `@Setter`推奨）
+- [x] **UserProfile エンティティ**
+  - [x] `net.hidearea.core.domain.entity.UserProfile` 作成
+  - [x] フィールド定義: `id`, `user`, `profile`, `roleInProfile`, `joinedAt`
+  - [x] `@ManyToOne` リレーション設定（User, Profile）
+  - [x] 複合ユニーク制約: `@UniqueConstraint(columnNames = {"user_id", "profile_id"})`
+  - [x] Lombok設定: `@Data`, `@Builder`, `@NoArgsConstructor`, `@AllArgsConstructor`
 
-- [ ] **ProfileProfileRelation エンティティ**
-  - [ ] `net.hidearea.core.domain.entity.ProfileProfileRelation` 作成
-  - [ ] フィールド定義: `id`, `parentProfile`, `childProfile`, `createdAt`
-  - [ ] `@ManyToOne` リレーション設定（Profile）
-  - [ ] 複合ユニーク制約: `@UniqueConstraint(columnNames = {"parent_profile_id", "child_profile_id"})`
-  - [ ] Lombok設定
+- [x] **ProfileProfileRelation エンティティ**
+  - [x] `net.hidearea.core.domain.entity.ProfileProfileRelation` 作成
+  - [x] フィールド定義: `id`, `parentProfile`, `childProfile`, `createdAt`
+  - [x] `@ManyToOne` リレーション設定（Profile）
+  - [x] 複合ユニーク制約: `@UniqueConstraint(columnNames = {"parent_profile_id", "child_profile_id"})`
+  - [x] Lombok設定: `@Data`, `@Builder`, `@NoArgsConstructor`, `@AllArgsConstructor`
 
 **参考**: [DATA_DESIGN.md](../architecture/DATA_DESIGN.md) - 1. エンティティ設計
 
 #### 3.3 JPA設定
 
-- [ ] **JPA Auditing有効化**
-  - [ ] `@EnableJpaAuditing` を`@SpringBootApplication`クラスに追加
-  - [ ] `@CreatedDate`, `@LastModifiedDate` が自動設定されることを確認
+- [x] **JPA Auditing有効化**
+  - [x] `@EnableJpaAuditing` を`@SpringBootApplication`クラスに追加
+  - [x] `@CreatedDate`, `@LastModifiedDate` が自動設定されることを確認
 
 ---
 
