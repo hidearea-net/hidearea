@@ -150,7 +150,7 @@ hidearea/
 
 以下のツールをインストールしてください:
 
-- **Java 21 LTS** (OpenJDK)
+- **Java 25 LTS** (OpenJDK)
 - **Node.js 20.x LTS** (npm含む)
 - **Docker Desktop** (Docker Compose含む)
 - **Git**
@@ -266,7 +266,7 @@ graph TD
 - [x] Flyway設定
 - [x] V1__init_schema.sql作成
 - [x] ビルド・起動・APIテスト成功
-  - Java 21 LTS使用
+  - Java 25 LTS使用
   - testプロファイルでH2データベース動作確認
   - `/api/v1/health` エンドポイントテスト成功
   - OpenAPI仕様（`/v3/api-docs`）取得成功
@@ -556,7 +556,7 @@ main（本番）
 ### 実装済み機能
 
 - ✅ プロジェクト構造（バックエンド・フロントエンド）
-- ✅ Gradle Kotlin DSL設定（Java 21 LTS）
+- ✅ Gradle設定（Java 25 LTS）
 - ✅ Docker Compose設定（PostgreSQL, Backend, Frontend）
 - ✅ Flywayマイグレーション設定
 - ✅ データベーススキーマ設計（users, profiles, user_profiles, profile_profile_relations）

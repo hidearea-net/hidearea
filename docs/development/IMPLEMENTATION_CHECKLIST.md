@@ -65,7 +65,7 @@
   - [x] Spring Initializr でプロジェクト作成
     - Group: `net.hidearea`
     - Artifact: `hidearea-backend`
-    - Java: 21 LTS (実際の設定: Java 25だがJava 21で動作確認済み)
+    - Java: 25 LTS
     - Dependencies: Spring Web, Spring Data JPA, PostgreSQL Driver, Spring Security, Lombok
   - [x] Gradle設定 (build.gradle使用)
   - [x] `./gradlew build` で正常にビルドできることを確認
