@@ -2,8 +2,8 @@
 
 **HideArea - MVPフェーズ実装タスク管理**
 
-**バージョン**: 1.0
-**最終更新日**: 2025-11-04
+**バージョン**: 1.1
+**最終更新日**: 2025-11-12
 
 ---
 
@@ -40,11 +40,11 @@
 
 | フェーズ | 内容 | 推定工数 | 状態 |
 |--------|------|---------|------|
-| **Phase 1** | プロジェクト基盤 | 1日 | [ ] |
-| **Phase 2** | データベース設定 | 1日 | [ ] |
-| **Phase 3** | ドメイン層 | 2日 | [ ] |
-| **Phase 4** | リポジトリ層 | 2日 | [ ] |
-| **Phase 5** | サービス層 | 3日 | [ ] |
+| **Phase 1** | プロジェクト基盤 | 1日 | [x] 完了 |
+| **Phase 2** | データベース設定 | 1日 | [x] 完了 |
+| **Phase 3** | ドメイン層 | 2日 | [x] 完了 |
+| **Phase 4** | リポジトリ層 | 2日 | [x] 完了 |
+| **Phase 5** | サービス層 | 3日 | [ ] 次のタスク |
 | **Phase 6** | セキュリティ層 | 2日 | [ ] |
 | **Phase 7** | API層（バックエンド） | 3日 | [ ] |
 | **Phase 8** | フロントエンド | 5日 | [ ] |
@@ -211,71 +211,71 @@
 
 ---
 
-### Phase 4: リポジトリ層（2日）
+### Phase 4: リポジトリ層（2日） ✅ **完了 (2025-11-12)**
 
 **目標**: データアクセス層を実装
 
 #### 4.1 Repositoryインターフェース作成
 
-- [ ] **UserRepository**
-  - [ ] `net.hidearea.core.repository.UserRepository` 作成
-  - [ ] `JpaRepository<User, Long>` を継承
-  - [ ] メソッド定義:
-    - [ ] `Optional<User> findByUsername(String username)`
-    - [ ] `Optional<User> findByEmail(String email)`
-    - [ ] `boolean existsByUsername(String username)`
-    - [ ] `boolean existsByEmail(String email)`
-    - [ ] `Optional<User> findByUsernameAndEnabledTrue(String username)`
+- [x] **UserRepository**
+  - [x] `net.hidearea.core.repository.UserRepository` 作成
+  - [x] `JpaRepository<User, Long>` を継承
+  - [x] メソッド定義:
+    - [x] `Optional<User> findByUsername(String username)`
+    - [x] `boolean existsByUsername(String username)`
+    - [x] `Optional<User> findByUsernameAndEnabledTrue(String username)`
 
-- [ ] **ProfileRepository**
-  - [ ] `net.hidearea.core.repository.ProfileRepository` 作成
-  - [ ] `JpaRepository<Profile, Long>` を継承
-  - [ ] メソッド定義:
-    - [ ] `List<Profile> findByProfileType(ProfileType profileType)`
-    - [ ] `List<Profile> findByIsPublicTrue()`
-    - [ ] `List<Profile> findByProfileNameContaining(String keyword)`
-    - [ ] カスタムクエリ（`@Query`）:
-      - [ ] `findChildrenByParentId(Long parentId)` - 子プロフィール取得
-      - [ ] `findRootProfiles()` - ルートプロフィール取得
-      - [ ] `getProfileDepth(Long profileId)` - 階層深度取得（再帰クエリ）
-      - [ ] `findRootProfileId(Long profileId)` - ルートID取得（再帰クエリ）
+- [x] **ProfileRepository**
+  - [x] `net.hidearea.core.repository.ProfileRepository` 作成
+  - [x] `JpaRepository<Profile, Long>` を継承
+  - [x] メソッド定義:
+    - [x] `Optional<Profile> findByEmail(String email)`
+    - [x] `boolean existsByEmail(String email)`
+    - [x] `List<Profile> findByProfileType(ProfileType profileType)`
+    - [x] `List<Profile> findByIsPublicTrue()`
+    - [x] `List<Profile> findByProfileNameContaining(String keyword)`
+    - [x] カスタムクエリ（`@Query`）:
+      - [x] `findChildrenByParentId(Long parentId)` - 子プロフィール取得
+      - [x] `findRootProfiles()` - ルートプロフィール取得
+      - [x] `getProfileDepth(Long profileId)` - 階層深度取得（再帰クエリ）
+      - [x] `findRootProfileId(Long profileId)` - ルートID取得（再帰クエリ）
 
-- [ ] **UserProfileRepository**
-  - [ ] `net.hidearea.core.repository.UserProfileRepository` 作成
-  - [ ] `JpaRepository<UserProfile, Long>` を継承
-  - [ ] メソッド定義:
-    - [ ] `List<UserProfile> findByUserId(Long userId)` - JOIN FETCH使用
-    - [ ] `List<UserProfile> findByProfileId(Long profileId)` - JOIN FETCH使用
-    - [ ] `Optional<UserProfile> findByUserIdAndProfileId(Long userId, Long profileId)`
-    - [ ] `boolean existsByUserIdAndProfileId(Long userId, Long profileId)`
-    - [ ] `List<UserProfile> findOwnersByProfileId(Long profileId)`
-    - [ ] `boolean existsByUserIdAndProfileIdAndRoleInProfile(...)`
-    - [ ] `List<UserProfile> findRootProfilesByUserId(Long userId)` - カスタムクエリ
+- [x] **UserProfileRepository**
+  - [x] `net.hidearea.core.repository.UserProfileRepository` 作成
+  - [x] `JpaRepository<UserProfile, Long>` を継承
+  - [x] メソッド定義:
+    - [x] `List<UserProfile> findByUserId(Long userId)` - JOIN FETCH使用
+    - [x] `List<UserProfile> findByProfileId(Long profileId)` - JOIN FETCH使用
+    - [x] `Optional<UserProfile> findByUserIdAndProfileId(Long userId, Long profileId)`
+    - [x] `boolean existsByUserIdAndProfileId(Long userId, Long profileId)`
+    - [x] `List<UserProfile> findOwnersByProfileId(Long profileId)`
+    - [x] `boolean existsByUserIdAndProfileIdAndRoleInProfile(...)`
+    - [x] `List<UserProfile> findRootProfilesByUserId(Long userId)` - カスタムクエリ
 
-- [ ] **ProfileProfileRelationRepository**
-  - [ ] `net.hidearea.core.repository.ProfileProfileRelationRepository` 作成
-  - [ ] `JpaRepository<ProfileProfileRelation, Long>` を継承
-  - [ ] メソッド定義:
-    - [ ] `List<ProfileProfileRelation> findByParentProfileId(Long parentProfileId)`
-    - [ ] `Optional<ProfileProfileRelation> findByChildProfileId(Long childProfileId)`
-    - [ ] `boolean existsByParentProfileIdAndChildProfileId(...)`
-    - [ ] カスタムクエリ（再帰CTE）:
-      - [ ] `findAllDescendantIds(Long profileId)` - 全子孫取得
-      - [ ] `findAllAncestorIds(Long profileId)` - 全祖先取得
+- [x] **ProfileProfileRelationRepository**
+  - [x] `net.hidearea.core.repository.ProfileProfileRelationRepository` 作成
+  - [x] `JpaRepository<ProfileProfileRelation, Long>` を継承
+  - [x] メソッド定義:
+    - [x] `List<ProfileProfileRelation> findByParentProfileId(Long parentProfileId)`
+    - [x] `Optional<ProfileProfileRelation> findByChildProfileId(Long childProfileId)`
+    - [x] `boolean existsByParentProfileIdAndChildProfileId(...)`
+    - [x] カスタムクエリ（再帰CTE）:
+      - [x] `findAllDescendantIds(Long profileId)` - 全子孫取得
+      - [x] `findAllAncestorIds(Long profileId)` - 全祖先取得
 
 **参考**: [DATA_DESIGN.md](../architecture/DATA_DESIGN.md) - 3. リポジトリパターン
 
 #### 4.2 Repositoryテスト作成
 
-- [ ] **統合テスト環境設定**
-  - [ ] `@DataJpaTest` を使用したテストクラス作成
-  - [ ] テスト用データベース設定（H2 or Testcontainers）
+- [~] **統合テスト環境設定** (Phase 9で実装予定)
+  - [~] `@DataJpaTest` を使用したテストクラス作成
+  - [~] テスト用データベース設定（H2 or Testcontainers）
 
-- [ ] **各Repositoryのテスト**
-  - [ ] UserRepositoryTest作成
-  - [ ] ProfileRepositoryTest作成（再帰クエリ含む）
-  - [ ] UserProfileRepositoryTest作成
-  - [ ] ProfileProfileRelationRepositoryTest作成
+- [~] **各Repositoryのテスト** (Phase 9で実装予定)
+  - [~] UserRepositoryTest作成
+  - [~] ProfileRepositoryTest作成（再帰クエリ含む）
+  - [~] UserProfileRepositoryTest作成
+  - [~] ProfileProfileRelationRepositoryTest作成
 
 ---
 
@@ -822,33 +822,32 @@
 
 | フェーズ | 進捗 | 備考 |
 |--------|------|------|
-| Phase 1: プロジェクト基盤 | 0% | 未着手 |
-| Phase 2: データベース設定 | 0% | 未着手 |
-| Phase 3: ドメイン層 | 0% | 未着手 |
-| Phase 4: リポジトリ層 | 0% | 未着手 |
-| Phase 5: サービス層 | 0% | 未着手 |
+| Phase 1: プロジェクト基盤 | 100% | ✅ 完了 (2025-11-05) |
+| Phase 2: データベース設定 | 100% | ✅ 完了 (2025-11-06) |
+| Phase 3: ドメイン層 | 100% | ✅ 完了 (2025-11-12) |
+| Phase 4: リポジトリ層 | 100% | ✅ 完了 (2025-11-12) |
+| Phase 5: サービス層 | 0% | ⏳ 次のタスク |
 | Phase 6: セキュリティ層 | 0% | 未着手 |
 | Phase 7: API層（バックエンド） | 0% | 未着手 |
 | Phase 8: フロントエンド | 0% | 未着手 |
 | Phase 9: テスト | 0% | 未着手 |
 | Phase 10: ドキュメント・デプロイ | 0% | 未着手 |
 
-**全体進捗**: 0% (0/10フェーズ完了)
+**全体進捗**: 40% (4/10フェーズ完了)
 
 ### 4.2 マイルストーン
 
-- [ ] **マイルストーン1（Week 1）**: Phase 1-3完了（プロジェクト基盤、DB、ドメイン層）
-- [ ] **マイルストーン2（Week 2）**: Phase 4-5完了（リポジトリ層、サービス層）
+- [x] **マイルストーン1（Week 1）**: Phase 1-3完了（プロジェクト基盤、DB、ドメイン層） ✅ 完了
+- [x] **マイルストーン2（Week 2）**: Phase 4-5完了（リポジトリ層、サービス層） 🔄 進行中 (Phase 4完了、Phase 5は次のタスク)
 - [ ] **マイルストーン3（Week 3）**: Phase 6-7完了（セキュリティ層、API層）
 - [ ] **マイルストーン4（Week 4）**: Phase 8-9完了（フロントエンド、テスト）
 - [ ] **マイルストーン5（Week 5）**: Phase 10完了、MVP完成
 
 ### 4.3 今週のタスク
 
-**Week 1（現在）**:
-- [ ] Phase 1: プロジェクト基盤
-- [ ] Phase 2: データベース設定
-- [ ] Phase 3: ドメイン層
+**Week 2（現在）**:
+- [x] Phase 4: リポジトリ層 ✅ 完了
+- [ ] Phase 5: サービス層 ⏳ 次のタスク
 
 ### 4.4 ブロッカー（障害）
 
