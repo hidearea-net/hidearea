@@ -551,7 +551,8 @@ main（本番）
 | **Phase 2: データベース設定** | ✅ 完了 | 2025-11-06 | Flyway設定、ビルド・起動・APIテスト成功 |
 | **Phase 3: ドメイン層** | ✅ 完了 | 2025-11-12 | 全エンティティ・Enum実装、JPA Auditing有効化完了 |
 | **Phase 4: リポジトリ層** | ✅ 完了 | 2025-11-12 | 全リポジトリ実装、カスタムクエリ・再帰クエリ実装完了 |
-| **Phase 5: サービス層** | ⏳ 次のタスク | - | ビジネスロジック実装予定 |
+| **Phase 5: サービス層** | ✅ 完了 | 2025-11-12 | 全サービス実装、例外ハンドリング、DTO・Mapper完了 |
+| **Phase 6: セキュリティ層** | ⏳ 次のタスク | - | JWT認証実装予定 |
 
 ### 実装済み機能
 
@@ -576,6 +577,15 @@ main（本番）
   - ✅ UserProfileRepository（ユーザー・プロフィール関連管理）
   - ✅ ProfileProfileRelationRepository（プロフィール階層管理）
   - ✅ カスタムクエリ実装（再帰クエリによる階層取得、深度計算）
+- ✅ **サービス層実装完了**
+  - ✅ 例外クラス（BusinessException, ResourceNotFoundException, UnauthorizedException, ErrorCode）
+  - ✅ GlobalExceptionHandler（統一エラーハンドリング）
+  - ✅ DTO（Request/Response）全実装
+  - ✅ Mapper（UserMapper, ProfileMapper, UserProfileMapper）
+  - ✅ AuthService（ユーザー登録・ログイン）
+  - ✅ UserService（ユーザー管理、パスワード変更）
+  - ✅ ProfileService（プロフィール管理、階層管理、メンバー管理）
+  - ✅ SecurityConfig（PasswordEncoder設定）
 
 ### 動作確認済み
 
@@ -595,12 +605,11 @@ curl http://localhost:9090/api/v1/health
 
 ### 次の作業
 
-**Phase 5: サービス層の実装**
-1. AuthService（認証・認可処理）
-2. UserService（ユーザー管理ビジネスロジック）
-3. ProfileService（プロフィール管理ビジネスロジック）
-4. トランザクション管理
-5. 例外ハンドリング
+**Phase 6: セキュリティ層の実装**
+1. JwtTokenProvider（JWT生成・検証）
+2. JwtAuthenticationFilter（JWT認証フィルター）
+3. UserDetailsServiceImpl（Spring Security統合）
+4. SecurityConfig完成（認証・認可設定）
 
 詳細は [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) を参照してください。
 

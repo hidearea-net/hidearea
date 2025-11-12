@@ -280,13 +280,13 @@
 
 ---
 
-### Phase 5: サービス層（3日）
+### Phase 5: サービス層（3日） ✅ **完了 (2025-11-12)**
 
 **目標**: ビジネスロジックを実装
 
 #### 5.1 例外クラス作成
 
-- [ ] **カスタム例外定義**
+- [x] **カスタム例外定義**
   - [ ] `net.hidearea.core.exception.BusinessException` - ビジネスロジック例外
   - [ ] `net.hidearea.core.exception.ResourceNotFoundException` - リソース未検出
   - [ ] `net.hidearea.core.exception.UnauthorizedException` - 認証失敗
