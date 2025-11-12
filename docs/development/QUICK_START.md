@@ -612,9 +612,7 @@ curl http://localhost:9090/api/v1/health
 2. 📖 [ARCHITECTURE.md](../architecture/ARCHITECTURE.md) を熟読する
 3. ✅ [ENVIRONMENT_SETUP.md](./ENVIRONMENT_SETUP.md) で環境構築
 4. ✅ [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) を確認
-5. ✅ Phase 3完了！
-6. ✅ Phase 4完了！
-7. 💻 Phase 5の実装開始！
+5. 💻 Phase 5の実装開始！
 
 ---
 
