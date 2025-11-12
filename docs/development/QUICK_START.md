@@ -150,7 +150,7 @@ hidearea/
 
 以下のツールをインストールしてください:
 
-- **Java 25** (OpenJDK)
+- **Java 21 LTS** (OpenJDK)
 - **Node.js 20.x LTS** (npm含む)
 - **Docker Desktop** (Docker Compose含む)
 - **Git**
@@ -266,7 +266,7 @@ graph TD
 - [x] Flyway設定
 - [x] V1__init_schema.sql作成
 - [x] ビルド・起動・APIテスト成功
-  - Java 25 LTS使用
+  - Java 21 LTS使用
   - testプロファイルでH2データベース動作確認
   - `/api/v1/health` エンドポイントテスト成功
   - OpenAPI仕様（`/v3/api-docs`）取得成功
@@ -277,31 +277,36 @@ graph TD
 
 **📝 注意**: V2__add_sample_data.sqlは必要に応じて後で追加します
 
-#### フェーズ3: ドメイン層（2日）
+#### フェーズ3: ドメイン層（2日）✅ **完了**
 
 **目標**: エンティティクラスとEnumを実装
 
 **タスク**:
-- [ ] User エンティティ
-- [ ] Profile エンティティ
-- [ ] UserProfile エンティティ
-- [ ] ProfileProfileRelation エンティティ
-- [ ] Enum定義（UserRole, ProfileType, RoleInProfile）
+- [x] User エンティティ
+- [x] Profile エンティティ
+- [x] UserProfile エンティティ
+- [x] ProfileProfileRelation エンティティ
+- [x] Enum定義（UserRole, ProfileType, RoleInProfile）
+- [x] JPA Auditing有効化
 
 **参考ドキュメント**: DATA_DESIGN.md
 
-#### フェーズ4: リポジトリ層（2日）
+**完了日**: 2025-11-12
+
+#### フェーズ4: リポジトリ層（2日）✅ **完了**
 
 **目標**: データアクセス層を実装
 
 **タスク**:
-- [ ] UserRepository
-- [ ] ProfileRepository
-- [ ] UserProfileRepository
-- [ ] ProfileProfileRelationRepository
-- [ ] カスタムクエリの実装
+- [x] UserRepository
+- [x] ProfileRepository（再帰クエリ含む）
+- [x] UserProfileRepository（JOIN FETCH使用）
+- [x] ProfileProfileRelationRepository（再帰CTE使用）
+- [x] カスタムクエリの実装（階層取得、深度計算）
 
 **参考ドキュメント**: DATA_DESIGN.md
+
+**完了日**: 2025-11-12
 
 #### フェーズ5: サービス層（3日）
 
@@ -551,7 +556,7 @@ main（本番）
 ### 実装済み機能
 
 - ✅ プロジェクト構造（バックエンド・フロントエンド）
-- ✅ Gradle Kotlin DSL設定（Java 25 LTS）
+- ✅ Gradle Kotlin DSL設定（Java 21 LTS）
 - ✅ Docker Compose設定（PostgreSQL, Backend, Frontend）
 - ✅ Flywayマイグレーション設定
 - ✅ データベーススキーマ設計（users, profiles, user_profiles, profile_profile_relations）
